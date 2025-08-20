@@ -1,0 +1,166 @@
+# =============================================
+# GitIgnore for C++/DX11/DX12/OpenGL Windows Project
+# =============================================
+
+# Ignore everything by default, then selectively include source files
+*.swp
+*.swo
+
+# ========== COMPILED BINARIES & BUILD OUTPUT ==========
+# Executables and libraries
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+
+# Object files and precompiled headers
+*.o
+*.obj
+*.pch
+
+# Intermediate compilation files
+*.ilk
+*.exp
+*.pdb                   # Program database (debug symbols)
+*.idb
+*.ipdb
+*.iobj
+*.pgc
+*.pgd
+
+# Linker and resource files
+*.map
+*.res
+*.sbr
+
+# ========== SYSTEM AND TEMPORARY FILES ==========
+# Backup and temporary files
+*.bak
+*.backup
+*.tmp
+
+# System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# OS directories and shortcuts
+$RECYCLE.BIN/
+*.lnk
+
+# ========== IDE AND EDITOR SPECIFIC FILES ==========
+# Visual Studio
+.vs/                    # Visual Studio workspace directory
+*.vcxproj              # Project files (should be in repo if needed)
+*.vcxproj.filters
+*.vcxproj.user         # User-specific project settings
+*.sln                  # Solution files (should be in repo if needed)
+*.suo                  # Solution user options
+*.opensdf
+*.sdf                  # SQL Server Compact Edition database
+*.VC.db
+*.VC.VC.opendb
+
+# Visual Studio Code
+.vscode/               # VSCode workspace settings
+!.vscode/settings.json # But keep these config files if present
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# CLion
+.idea/
+*.iml
+cmake-build-*/         # CLion's CMake build directories
+
+# ========== BUILD SYSTEMS ==========
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+*.cmake
+
+# ========== PACKAGE MANAGERS ==========
+# vcpkg (C++ package manager)
+vcpkg_installed/
+vcpkg_ports/
+vcpkg_buildtrees/
+
+# Conan (C/C++ package manager)
+.conan/
+conanbuildinfo.cmake
+conaninfo.txt
+conanbuild.txt
+conanenv.txt
+conan_imports_*/
+
+# NuGet (.NET package manager)
+packages/
+[Nn]u[Gg]et.[Pp]ackages.[Cc]onfig
+*.nupkg
+
+# ========== BUILD DIRECTORIES ==========
+# Common build output directories
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Dd]ebug/
+[Rr]elease/
+[Pp]rofile/
+x64/                   # 64-bit build outputs
+x86/                   # 32-bit build outputs
+[Ww]in32/
+[Ww]in64/
+_build/
+
+# ========== ASSETS AND CONFIGURATIONS ==========
+# Local configuration files (create templates instead)
+config.local.*
+settings.local.*
+*.user                 # User-specific settings
+
+# Generated assets and cache files
+*.bin
+*.cache
+
+# ========== DOCUMENTATION ==========
+# Generated documentation
+[Dd]ocs/[Bb]uild/
+[Dd]oxygen/
+
+# ========== LOGS AND TEST RESULTS ==========
+# Log files and test outputs
+*.log
+*.tlog
+*.lastbuildstate
+_test_results/
+[Cc]overage/           # Code coverage reports
+
+# ========== CONFIGURATION SPECIFIC ==========
+# Configuration-specific directories (Debug, Release, etc.)
+[Dd]ebug*/
+[Rr]elease*/
+[Pp]rofile*/
+
+# ========== GRAPHICS SPECIFIC ==========
+# Compiled shaders (keep source, ignore compiled)
+*.cso                 # Compiled Shader Object (DirectX)
+*.spv                 # SPIR-V binaries (Vulkan)
+*.glslcache
+
+# Asset pipeline directories
+_processed/
+_imported/
+
+# Engine-specific cache
+.package/
+.cache/
