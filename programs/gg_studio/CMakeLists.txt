@@ -21,6 +21,8 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_compile_definitions(${PROJECT_NAME} PUBLIC NOMINMAX)
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
