@@ -7,8 +7,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch(msg)
     {
         case WM_CLOSE:
+        {
             PostQuitMessage( 69 );
             break;
+        }
+        case WM_KEYDOWN:
+        {
+            if(wParam == 'F')
+            {
+                SetWindowText(hWnd, "GG STUDIO");
+            }
+            break;
+        }
+        case WM_KEYUP:
+        {
+            if(wParam == 'F')
+            {
+                SetWindowText(hWnd, "GG Studio");
+            }
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
 
     return DefWindowProc(hWnd, msg, wParam, lParam);
