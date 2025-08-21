@@ -2,6 +2,9 @@
 #include <minwindef.h>
 #include <winuser.h>
 
+#include <string>
+#include <sstream>
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
@@ -25,6 +28,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             {
                 SetWindowText(hWnd, "GG Studio");
             }
+            break;
+        }
+        case WM_CHAR:
+        {
+            static std::string title;
+            title.push_back(static_cast<char>(wParam));
+            SetWindowText(hWnd, title.c_str());
+            break;
+        }
+        case WM_LBUTTONDOWN:
+        {
+            POINTS pt = MAKEPOINTS(lParam);
+            std::ostringstream oss;
+            oss << "(" << pt.x << "," << pt.y << ")";
+            SetWindowText(hWnd, oss.str().c_str());
             break;
         }
         default:
