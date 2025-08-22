@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include "src/include/exception.hpp"
+#include "src/include/keyboard.hpp"
 
 namespace gg
 {
@@ -46,6 +47,8 @@ public:
     ~Window();
     Window( const Window& ) = delete;
     Window& operator=( const Window&) = delete;
+public:
+    Keyboard keyboard;
 private:
     static LRESULT CALLBACK handleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
     static LRESULT CALLBACK handleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;

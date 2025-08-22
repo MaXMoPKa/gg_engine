@@ -148,6 +148,31 @@ LRESULT gg::Window::handleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         return 0;
     }
+    case WM_KILLFOCUS:
+    {
+        keyboard.clearState();
+        break;
+    }
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+    {
+        if(!(lParam & 0x40000000) || keyboard.autorepeatIsEnabled())
+        {
+            keyboard.onKeyPressed(static_cast<unsigned char>(wParam));
+        }
+        break;
+    }
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+    {
+        keyboard.onKeyReleased(static_cast<unsigned char>(wParam));
+        break;
+    }
+    case WM_CHAR:
+    {
+        keyboard.onChar(static_cast<unsigned char>(wParam));
+        break;
+    }
     }
 
     return DefWindowProc(hWnd, msg, wParam, lParam);
