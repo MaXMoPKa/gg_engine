@@ -4,6 +4,7 @@
 
 #include "src/include/exception.hpp"
 #include "src/include/keyboard.hpp"
+#include "src/include/mouse.hpp"
 
 namespace gg
 {
@@ -47,8 +48,11 @@ public:
     ~Window();
     Window( const Window& ) = delete;
     Window& operator=( const Window&) = delete;
+
+    void setTitle(const std::string& title);
 public:
     Keyboard keyboard;
+    Mouse mouse;
 private:
     static LRESULT CALLBACK handleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
     static LRESULT CALLBACK handleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;

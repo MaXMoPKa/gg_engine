@@ -1,5 +1,4 @@
 #include "src/include/keyboard.hpp"
-#include <winuser.h>
 
 bool gg::Keyboard::keyIsPressed(unsigned char key_code) const noexcept
 {
