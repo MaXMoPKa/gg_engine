@@ -89,13 +89,15 @@ HINSTANCE gg::Window::WindowClass::getInstance() noexcept
 }
 
 gg::Window::Window(int width, int height, const char* name)
+    : width(width)
+    , height(height)
 {
     RECT wr;
     wr.left = 100;
     wr.right = width + wr.left;
     wr.top = 100;
     wr.bottom = height + wr.top;
-    if(FAILED(AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)))
+    if(AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
     {
         throw GGWND_LAST_EXCEPT();
     }
@@ -113,6 +115,14 @@ gg::Window::Window(int width, int height, const char* name)
 gg::Window::~Window()
 {
     DestroyWindow(h_window);
+}
+
+void gg::Window::setTitle(const std::string& title)
+{
+    if(SetWindowText(h_window, title.c_str()) == 0)
+    {
+        throw GGWND_LAST_EXCEPT();
+    }
 }
 
 LRESULT WINAPI gg::Window::handleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -171,6 +181,66 @@ LRESULT gg::Window::handleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_CHAR:
     {
         keyboard.onChar(static_cast<unsigned char>(wParam));
+        break;
+    }
+    case WM_MOUSEMOVE:
+    {
+        const POINTS pt = MAKEPOINTS(lParam);
+
+        if(pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height)
+        {
+            mouse.onMouseMove(pt.x, pt.y);
+            if(!mouse.isInWindow())
+            {
+                SetCapture(h_window);
+                mouse.onMouseEnter(pt.x, pt.y);
+            }
+        }
+        else
+        {
+            if(wParam & (MK_LBUTTON | MK_RBUTTON))
+            {
+                mouse.onMouseMove(pt.x, pt.y);
+            }
+            else
+            {
+                ReleaseCapture();
+                mouse.onMouseLeave(pt.x, pt.y);
+            }
+        }
+
+        mouse.onMouseMove(pt.x, pt.y);
+        break;
+    }
+    case WM_LBUTTONDOWN:
+    {
+        const POINTS pt = MAKEPOINTS(lParam);
+        mouse.onLeftPressed(pt.x, pt.y);
+        break;
+    }
+    case WM_RBUTTONDOWN:
+    {
+        const POINTS pt = MAKEPOINTS(lParam);
+        mouse.onRightPressed(pt.x, pt.y);
+        break;
+    }
+    case WM_LBUTTONUP:
+    {
+        const POINTS pt = MAKEPOINTS(lParam);
+        mouse.onLeftReleased(pt.x, pt.y);
+        break;
+    }
+    case WM_RBUTTONUP:
+    {
+        const POINTS pt = MAKEPOINTS(lParam);
+        mouse.onRightReleased(pt.x, pt.y);
+        break;
+    }
+    case WM_MOUSEWHEEL:
+    {
+        const POINTS pt = MAKEPOINTS(lParam);
+        const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+        mouse.onWheelDelta(pt.x, pt.y, delta);
         break;
     }
     }
