@@ -1,7 +1,6 @@
 #include "src/include/exception.hpp"
 #include "src/include/app.hpp"
 #include <minwindef.h>
-#include <winuser.h>
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {

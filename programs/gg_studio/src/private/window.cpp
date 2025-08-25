@@ -1,58 +1,69 @@
 #include "src/include/window.h"
+#include "src/include/dx11_graphics.hpp"
+
+#include <memory>
 #include <minwindef.h>
 #include <optional>
 #include <sstream>
 #include <winbase.h>
 #include <winnt.h>
-#include <winuser.h>
 
 #include "resources/resource.h"
 
 gg::Window::WindowClass gg::Window::WindowClass::window_class;
 
-gg::Window::WindowException::WindowException(int line, const char* file, HRESULT hr) noexcept
-    : Exception(line, file)
+gg::Window::HrException::HrException(int line, const char* file, HRESULT hr) noexcept
+    : WindowException(line, file)
     , hr(hr)
 {}
 
-const char* gg::Window::WindowException::what() const noexcept
+const char* gg::Window::HrException::what() const noexcept
 {
     std::ostringstream oss;
     oss << getType() << std::endl
-        << "[Error Code] " << getErrorCode() << std::endl
-        << "[Description] " << getErrorString() << std::endl;
+        << "[Error Code] 0x" << std::hex << std::uppercase << getErrorCode()
+        << std::dec << " (" << static_cast<unsigned long>(getErrorCode()) << ")" << std::endl
+        << "[Description] " << getErrorDescription() << std::endl
+        << getOriginString();
     what_buffer = oss.str();
     return what_buffer.c_str();
 }
 
-const char* gg::Window::WindowException::getType() const noexcept
+const char* gg::Window::HrException::getType() const noexcept
 {
     return "GG Window Exception";
 }
 
 std::string gg::Window::WindowException::translateErrorCode(HRESULT hr) noexcept
 {
-    char* p_msg_buffer = nullptr;
-    DWORD n_msg_len = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                                    nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&p_msg_buffer), 0, nullptr);
-    if(n_msg_len == 0)
+    char* msg_buf = nullptr;
+    const DWORD msg_len = FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,hr,MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
+        reinterpret_cast<LPSTR>(&msg_buf), 0, nullptr);
+    if( msg_len == 0 )
     {
-        return "Unidentified error code";
+    return "Unidentified error code";
     }
-
-    std::string error_string = p_msg_buffer;
-    LocalFree(p_msg_buffer);
-    return error_string;
+    std::string errorString = msg_buf;
+    LocalFree( msg_buf );
+    return errorString;
 }
 
-HRESULT gg::Window::WindowException::getErrorCode() const noexcept
+HRESULT gg::Window::HrException::getErrorCode() const noexcept
 {
     return hr;
 }
 
-std::string gg::Window::WindowException::getErrorString() const noexcept
+std::string gg::Window::HrException::getErrorDescription() const noexcept
 {
-    return translateErrorCode(hr);
+    return WindowException::translateErrorCode(hr);
+}
+
+const char* gg::Window::NoGfxException::getType() const noexcept
+{
+    return "GG Window Exception [No Graphics]";
 }
 
 gg::Window::WindowClass::WindowClass() noexcept
@@ -111,6 +122,8 @@ gg::Window::Window(int width, int height, const char* name)
     }
 
     ShowWindow(h_window, SW_SHOWDEFAULT);
+
+    graphics = std::make_unique<gapi::DX11Graphics>(h_window);
 }
 
 gg::Window::~Window()
@@ -142,6 +155,15 @@ std::optional<int> gg::Window::processMessages()
     }
 
     return {};
+}
+
+gg::gapi::DX11Graphics& gg::Window::getGraphics()
+{
+    if(graphics == nullptr)
+    {
+        throw GGWND_NOGFX_EXCEPT();
+    }
+    return *graphics;
 }
 
 LRESULT WINAPI gg::Window::handleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
