@@ -6,6 +6,8 @@
 #include "src/include/keyboard.hpp"
 #include "src/include/mouse.hpp"
 
+#include <optional>
+
 namespace gg
 {
 
@@ -50,6 +52,8 @@ public:
     Window& operator=( const Window&) = delete;
 
     void setTitle(const std::string& title);
+
+    static std::optional<int> processMessages();
 public:
     Keyboard keyboard;
     Mouse mouse;
