@@ -7,26 +7,43 @@
 #include "src/include/mouse.hpp"
 
 #include <optional>
+#include <memory>
 
 namespace gg
 {
+
+namespace gapi
+{
+    class DX11Graphics;
+}
 
 class Window
 {
 public:
     class WindowException : public Exception
     {
+        using Exception::Exception;
     public:
-        WindowException(int line, const char* file, HRESULT hr) noexcept;
+        static std::string translateErrorCode(HRESULT hr) noexcept;
+    };
+    class HrException : public WindowException
+    {
+    public:
+        HrException(int line, const char* file, HRESULT hr) noexcept;
 
         const char* what() const noexcept override;
         const char* getType() const noexcept override;
-        static std::string translateErrorCode(HRESULT hr) noexcept;
         HRESULT getErrorCode() const noexcept;
-        std::string getErrorString() const noexcept;
+        std::string getErrorDescription() const noexcept;
 
     private:
-        HRESULT hr;
+        HRESULT hr = 0;
+    };
+    class NoGfxException : public WindowException
+    {
+    public:
+        using WindowException::WindowException;
+        const char* getType() const noexcept override;
     };
 
 private:
@@ -54,6 +71,8 @@ public:
     void setTitle(const std::string& title);
 
     static std::optional<int> processMessages();
+
+    gapi::DX11Graphics& getGraphics();
 public:
     Keyboard keyboard;
     Mouse mouse;
@@ -65,9 +84,11 @@ private:
     int width;
     int height;
     HWND h_window;
+    std::unique_ptr<gapi::DX11Graphics> graphics;
 };
 
-#define GGWND_EXCEPT(hr) Window::WindowException(__LINE__, __FILE__, hr);
-#define GGWND_LAST_EXCEPT() Window::WindowException(__LINE__, __FILE__, GetLastError());
+#define GGWND_EXCEPT(hr) Window::HrException(__LINE__, __FILE__, hr)
+#define GGWND_LAST_EXCEPT() Window::HrException(__LINE__, __FILE__, GetLastError())
+#define GGWND_NOGFX_EXCEPT() Window::NoGfxException( __LINE__,__FILE__ )
 
 }
