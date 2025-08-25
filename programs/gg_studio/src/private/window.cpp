@@ -1,5 +1,6 @@
 #include "src/include/window.h"
 #include <minwindef.h>
+#include <optional>
 #include <sstream>
 #include <winbase.h>
 #include <winnt.h>
@@ -123,6 +124,24 @@ void gg::Window::setTitle(const std::string& title)
     {
         throw GGWND_LAST_EXCEPT();
     }
+}
+
+std::optional<int> gg::Window::processMessages()
+{
+    MSG msg;
+
+    while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+    {
+        if(msg.message == WM_QUIT)
+        {
+            return msg.wParam;
+        }
+
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return {};
 }
 
 LRESULT WINAPI gg::Window::handleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept

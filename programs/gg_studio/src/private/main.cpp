@@ -1,5 +1,5 @@
 #include "src/include/exception.hpp"
-#include "src/include/window.h"
+#include "src/include/app.hpp"
 #include <minwindef.h>
 #include <winuser.h>
 
@@ -7,22 +7,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
     try
     {
-    gg::Window wnd(800, 300, "GG Studio");
-
-    MSG msg;
-    BOOL gResult;
-    while( (gResult = GetMessage(&msg, nullptr, 0, 0)) > 0 )
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-
-    if( gResult == -1 )
-    {
-        return -1;
-    }
-
-    return msg.wParam;
+        return gg::App{}.go();
     }
     catch(const gg::Exception& e)
     {
