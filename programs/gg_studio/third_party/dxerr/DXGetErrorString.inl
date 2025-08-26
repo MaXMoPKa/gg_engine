@@ -1,3 +1,6 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+
 switch(hr)
 {
 // Commmented out codes are actually alises for other codes
@@ -3329,3 +3332,5 @@ switch(hr)
 }
 
 return DX_STR_WRAP("Unknown");
+
+#pragma clang diagnostic pop

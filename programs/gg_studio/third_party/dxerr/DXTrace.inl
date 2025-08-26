@@ -1,3 +1,11 @@
+#ifndef STR_FMT_SPEC
+#define STR_FMT_SPEC "%s"
+#endif
+
+#ifndef LSTR_FMT_SPEC
+#define LSTR_FMT_SPEC L"%s"
+#endif
+
 DX_CHAR strBufferLine[128];
 DX_CHAR strBufferError[256];
 DX_CHAR strBuffer[BUFFER_SIZE];
