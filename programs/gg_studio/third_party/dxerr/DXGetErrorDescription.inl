@@ -1,3 +1,6 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++11-narrowing"
+
 if ( !count )
     return;
 
@@ -420,3 +423,5 @@ switch (hr)
 // -------------------------------------------------------------
     CHK_ERR(XAPO_E_FORMAT_UNSUPPORTED, "Requested audio format unsupported.")
 }
+
+#pragma clang diagnostic pop

@@ -7,19 +7,11 @@
 gg::gapi::DXGIInfoManager::DXGIInfoManager()
 {
 
-	HRESULT hr = DXGIGetDebugInterface1(0, __uuidof(IDXGIInfoQueue), reinterpret_cast<void**>(&p_dxgi_info_queue));
+	HRESULT hr = DXGIGetDebugInterface1(0, __uuidof(IDXGIInfoQueue), &p_dxgi_info_queue);
 
 	if (FAILED(hr))
 	{
 		throw std::runtime_error("Failed to get IDXGIInfoQueue interface");
-	}
-}
-
-gg::gapi::DXGIInfoManager::~DXGIInfoManager()
-{
-	if (p_dxgi_info_queue != nullptr)
-	{
-		p_dxgi_info_queue->Release();
 	}
 }
 

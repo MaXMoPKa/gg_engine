@@ -6,7 +6,8 @@
 
 #include <d3d11.h>
 #include <dxgi.h>
-
+#include <wrl.h>
+#include <wrl/client.h>
 
 namespace gg
 {
@@ -49,7 +50,7 @@ public:
     DX11Graphics(HWND h_window);
     DX11Graphics(const DX11Graphics&) = delete;
     DX11Graphics& operator=(const DX11Graphics&) = delete;
-    ~DX11Graphics();
+    ~DX11Graphics() = default;
 
     void endFrame();
     void clearBuffer( float red, float green, float blue) noexcept;
@@ -58,10 +59,10 @@ private:
 #ifndef NDEBUG
     DXGIInfoManager info_manager;
 #endif
-    ID3D11Device* p_device = nullptr;
-    IDXGISwapChain* p_swap_chain = nullptr;
-    ID3D11DeviceContext* p_context = nullptr;
-    ID3D11RenderTargetView* p_target = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Device> p_device = nullptr;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> p_swap_chain = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> p_context = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> p_target = nullptr;
 };
 
 }

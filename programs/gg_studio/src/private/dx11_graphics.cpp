@@ -56,34 +56,9 @@ gg::gapi::DX11Graphics::DX11Graphics(HWND h_window)
                                   swap_create_flags, nullptr, 0, D3D11_SDK_VERSION, &swap_chain_desc, &p_swap_chain,
                                   &p_device, nullptr, &p_context));
 
-    ID3D11Resource* back_buffer = nullptr;
-    GFX_THROW_INFO(p_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&back_buffer)));
-    GFX_THROW_INFO(p_device->CreateRenderTargetView(back_buffer, nullptr, &p_target));
-
-    back_buffer->Release();
-}
-
-gg::gapi::DX11Graphics::~DX11Graphics()
-{
-    if(p_device)
-    {
-        p_device->Release();
-    }
-
-    if(p_swap_chain)
-    {
-        p_swap_chain->Release();
-    }
-
-    if(p_context)
-    {
-        p_context->Release();
-    }
-
-    if(p_target)
-    {
-        p_target->Release();
-    }
+    Microsoft::WRL::ComPtr<ID3D11Resource> back_buffer = nullptr;
+    GFX_THROW_INFO(p_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), &back_buffer));
+    GFX_THROW_INFO(p_device->CreateRenderTargetView(back_buffer.Get(), nullptr, &p_target));
 }
 
 void gg::gapi::DX11Graphics::endFrame()
@@ -108,7 +83,7 @@ void gg::gapi::DX11Graphics::endFrame()
 void gg::gapi::DX11Graphics::clearBuffer(float red, float green, float blue) noexcept
 {
     const float color[] = {red, green, blue, 1.0f};
-    p_context->ClearRenderTargetView(p_target, color);
+    p_context->ClearRenderTargetView(p_target.Get(), color);
 }
 
 gg::gapi::DX11Graphics::HrException::HrException(int line, const char* file, HRESULT hr, std::vector<std::string> info_messages) noexcept
