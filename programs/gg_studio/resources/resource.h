@@ -3,3 +3,6 @@
 
 // Icons
 #define IDI_GG_STUDIO 1000
+// Shaders
+#define IDR_VERTEX_SHADER 1001
+

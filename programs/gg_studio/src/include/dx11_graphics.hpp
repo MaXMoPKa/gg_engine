@@ -8,6 +8,8 @@
 #include <dxgi.h>
 #include <wrl.h>
 #include <wrl/client.h>
+#include <vector>
+#include <string>
 
 namespace gg
 {
@@ -38,6 +40,17 @@ public:
         std::string info;
     };
 
+    class InfoException : public GraphicsException
+    {
+    public:
+        InfoException( int line,const char* file,std::vector<std::string> info_messages ) noexcept;
+        const char* what() const noexcept override;
+        const char* getType() const noexcept override;
+        std::string getErrorInfo() const noexcept;
+    private:
+        std::string info;
+    };
+
     class DeviceRemovedException : public HrException
     {
         using HrException::HrException;
@@ -54,6 +67,7 @@ public:
 
     void endFrame();
     void clearBuffer( float red, float green, float blue) noexcept;
+    void drawTestTriangle();
 
 private:
 #ifndef NDEBUG

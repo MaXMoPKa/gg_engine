@@ -2,3 +2,4 @@
 #include "resource.h"
 
 IDI_GG_STUDIO ICON "icons/gg_studio.ico"
+IDR_VERTEX_SHADER RCDATA "shaders/vertex_shader.hlsl"

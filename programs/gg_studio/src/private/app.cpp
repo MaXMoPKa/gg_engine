@@ -24,5 +24,6 @@ void gg::App::doFrame()
 {
     const float c = std::sin(timer.peek()) / 2.0f + 0.5f;
     window.getGraphics().clearBuffer(c, c, 1.0f);
+    window.getGraphics().drawTestTriangle();
     window.getGraphics().endFrame();
 }

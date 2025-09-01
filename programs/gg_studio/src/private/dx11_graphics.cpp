@@ -8,10 +8,12 @@
 #include <ostream>
 #include <winerror.h>
 #include <winscard.h>
+#include <d3dcompiler.h>
 
 #include "third_party/dxerr/dxerr.h"
 
 #include <sstream>
+#include <wrl/client.h>
 
 #define GFX_EXCEPT_NOINFO(hr) DX11Graphics::HrException( __LINE__,__FILE__,(hr) )
 #define GFX_THROW_NOINFO(hrcall) if( FAILED( hr = (hrcall) ) ) throw DX11Graphics::HrException( __LINE__,__FILE__,hr )
@@ -20,10 +22,12 @@
 #define GFX_EXCEPT(hr) DX11Graphics::HrException( __LINE__,__FILE__,(hr), info_manager.getMessages() )
 #define GFX_THROW_INFO(hrcall) info_manager.set(); if( FAILED( hr = (hrcall) ) ) throw GFX_EXCEPT(hr)
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) DX11Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr),info_manager.getMessages() )
+#define GFX_THROW_INFO_ONLY(call) info_manager.set(); (call); {auto v = info_manager.getMessages(); if(!v.empty()) {throw DX11Graphics::InfoException( __LINE__,__FILE__,v);}}
 #else
 #define GFX_EXCEPT(hr) DX11Graphics::HrException( __LINE__,__FILE__,(hr) )
 #define GFX_THROW_INFO(hrcall) GFX_THROW_NOINFO(hrcall)
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) DX11Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr) )
+#define GFX_THROW_INFO_ONLY(call) (call)
 #endif
 
 gg::gapi::DX11Graphics::DX11Graphics(HWND h_window)
@@ -86,6 +90,51 @@ void gg::gapi::DX11Graphics::clearBuffer(float red, float green, float blue) noe
     p_context->ClearRenderTargetView(p_target.Get(), color);
 }
 
+void gg::gapi::DX11Graphics::drawTestTriangle()
+{
+    HRESULT hr = 0;
+
+    struct Vertex
+    {
+        float x;
+        float y;
+    };
+
+    const Vertex vertices[] =
+    {
+        {0.0f, 0.5f},
+        {0.5f, -0.5f},
+        {-0.5f, -0.5f},
+    };
+
+    Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
+    D3D11_BUFFER_DESC bd = {};
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.CPUAccessFlags = 0u;
+    bd.MiscFlags = 0u;
+    bd.ByteWidth = sizeof(vertices);
+    bd.StructureByteStride = sizeof(Vertex);
+
+    D3D11_SUBRESOURCE_DATA sd = {};
+    sd.pSysMem = vertices;
+
+    GFX_THROW_INFO(p_device->CreateBuffer(&bd, &sd, &vertex_buffer));
+
+    const UINT stride = sizeof(Vertex);
+    const UINT offset = 0u;
+    p_context->IASetVertexBuffers(0u, 1u, &vertex_buffer, &stride, &offset);
+
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
+    Microsoft::WRL::ComPtr<ID3DBlob> blob;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"D:/hobby/gg_engine/_build/bin/Debug/resources/shaders/vertex_shader.cso", &blob));
+    GFX_THROW_INFO(p_device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vertex_shader));
+
+    p_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+
+    GFX_THROW_INFO_ONLY(p_context->Draw(static_cast<UINT>(std::size(vertices)), 0u));
+}
+
 gg::gapi::DX11Graphics::HrException::HrException(int line, const char* file, HRESULT hr, std::vector<std::string> info_messages) noexcept
     : GraphicsException(line, file)
     , hr(hr)
@@ -143,6 +192,41 @@ std::string gg::gapi::DX11Graphics::HrException::getErrorDescription() const noe
 std::string gg::gapi::DX11Graphics::HrException::getErrorInfo() const noexcept
 {
     return info;
+}
+
+gg::gapi::DX11Graphics::InfoException::InfoException( int line,const char * file,std::vector<std::string> info_messages ) noexcept
+    : GraphicsException( line,file )
+{
+    for( const auto& m : info_messages )
+    {
+        info += m;
+        info.push_back( '\n' );
+    }
+
+    if( !info.empty() )
+    {
+        info.pop_back();
+    }
+}
+
+const char* gg::gapi::DX11Graphics::InfoException::what() const noexcept
+{
+    std::ostringstream oss;
+    oss << getType() << std::endl
+        << "\n[Error Info]\n" << getErrorInfo() << std::endl << std::endl;
+    oss << getOriginString();
+    what_buffer = oss.str();
+    return what_buffer.c_str();
+}
+
+const char* gg::gapi::DX11Graphics::InfoException::getType() const noexcept
+{
+	return "GG Graphics Info Exception";
+}
+
+std::string gg::gapi::DX11Graphics::InfoException::getErrorInfo() const noexcept
+{
+	return info;
 }
 
 const char* gg::gapi::DX11Graphics::DeviceRemovedException::getType() const noexcept
