@@ -9,7 +9,11 @@ export namespace gg
     class BaseWindow : public IWindow
     {
         public:
-            BaseWindow(const WindowDescriptor& descriptor);
+            BaseWindow(const WindowDescriptor& descriptor)
+                : IWindow{}
+                , descriptor{descriptor}
+            {}
+
             ~BaseWindow() override = default;
 
             BaseWindow(const BaseWindow&) = delete;
@@ -18,7 +22,13 @@ export namespace gg
             BaseWindow(BaseWindow&&) = delete;
             BaseWindow& operator=(BaseWindow&&) = delete;
 
-            void setTitle(const String& new_title) override;
+            void setTitle(const String& new_title) override
+            {
+                if(!new_title.empty())
+                {
+                    descriptor.title = new_title;
+                }
+            }
 
         private:
             WindowDescriptor descriptor;

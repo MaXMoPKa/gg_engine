@@ -9,7 +9,10 @@ export namespace gg
 class WindowsWindow final : public BaseWindow
 {
 public:
-        WindowsWindow(const WindowDescriptor& descriptor);
+        WindowsWindow(const WindowDescriptor& descriptor)
+            : BaseWindow(descriptor)
+        {}
+
         ~WindowsWindow() override = default;
 
         WindowsWindow(const WindowsWindow&) = delete;
