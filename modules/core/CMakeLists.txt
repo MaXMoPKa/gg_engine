@@ -18,15 +18,15 @@ set(MODULE_FILES ${INTERFACE_MODULES})
 
 add_library(${PROJECT_NAME} STATIC)
 
-target_sources(${PROJECT_NAME} PRIVATE FILE_SET interface_modules TYPE CXX_MODULES FILES ${INTERFACE_MODULES})
+target_sources(${PROJECT_NAME} PUBLIC FILE_SET interface_modules TYPE CXX_MODULES FILES ${INTERFACE_MODULES})
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /std:c++23 /experimental:module)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23
-                                                   -fmodules
-                                                   -fbuiltin-module-map
-                                                   -fimplicit-module-maps)
+                                                   -fmodules)
+                                                   #-fbuiltin-module-map
+                                                   #-fimplicit-module-maps)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules-ts)
 endif()
