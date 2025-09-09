@@ -1,3 +1,5 @@
+module;
+
 export module core.base_window;
 
 import core.types;
@@ -22,6 +24,14 @@ export namespace gg
             BaseWindow(BaseWindow&&) = delete;
             BaseWindow& operator=(BaseWindow&&) = delete;
 
+            String& getTitle()
+            {
+                return descriptor.title;
+            }
+            String getTitle() const
+            {
+                return descriptor.title;
+            }
             void setTitle(const String& new_title) override
             {
                 if(!new_title.empty())
@@ -30,7 +40,7 @@ export namespace gg
                 }
             }
 
-        private:
+        protected:
             WindowDescriptor descriptor;
     };
 } // namespace gg
