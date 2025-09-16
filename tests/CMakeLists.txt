@@ -50,8 +50,7 @@ function(create_project_from_sources type test)
     if(MSVC)
         target_compile_options(${NAME} PRIVATE /std:c++23 /experimental:module)
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        target_compile_options(${NAME} PRIVATE -std=c++23
-                                               -fmodules)
+        target_compile_options(${NAME} PRIVATE -fmodules)
                                                #-fbuiltin-module-map
                                                #-fimplicit-module-maps)
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

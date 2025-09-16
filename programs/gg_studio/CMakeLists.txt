@@ -5,6 +5,14 @@ project(gg_studio LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_COMPILER_TARGET x86_64-pc-windows-msvc)
+set(CMAKE_C_COMPILER_TARGET x86_64-pc-windows-msvc)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -20,12 +28,11 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /std:c++23 /experimental:module)
+    target_compile_options(${PROJECT_NAME} PRIVATE /std:c++23
+                                                   /experimental:module)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23
                                                    -fmodules)
-                                                   #-fbuiltin-module-map
-                                                   #-fimplicit-module-maps)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules-ts)
 endif()
