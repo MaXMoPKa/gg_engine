@@ -7,7 +7,6 @@ import core.vector;
 
 int main()
 {
-
     gg::WindowDescriptor descriptor{gg::i16vec2{1920, 1080}, "GG Studio"};
     std::shared_ptr<gg::WindowsWindow> window = std::make_shared<gg::WindowsWindow>(descriptor);
     window->create();
