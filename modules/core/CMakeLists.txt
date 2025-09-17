@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31.5)
 
-project(gg_engine LANGUAGES CXX)
+project(core LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,6 +13,8 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_COMPILER_TARGET x86_64-pc-windows-msvc)
 set(CMAKE_C_COMPILER_TARGET x86_64-pc-windows-msvc)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -20,8 +22,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 file(GLOB_RECURSE INTERFACE_MODULES interface/*.cppm)
-
-set(MODULE_FILES ${INTERFACE_MODULES})
 
 add_library(${PROJECT_NAME} STATIC)
 
@@ -37,6 +37,8 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules-ts)
 endif()
 
+add_library(gg::core ALIAS core)
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${INTERFACE_MODULES})
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
@@ -44,7 +46,5 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS)
     COMMAND ${CMAKE_COMMAND} -E create_symlink
     "${CMAKE_BINARY_DIR}/compile_commands.json"
     "${CMAKE_SOURCE_DIR}/compile_commands.json"
-    COMMENT "[gg_studio] Creating symlink for compile_commands.json")
+    COMMENT "[gg_engine] Creating symlink for compile_commands.json")
 endif(CMAKE_EXPORT_COMPILE_COMMANDS)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")

@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.31.5)
 project(gg_engine)
 
 add_subdirectory(core)
-#add_subdirectory(render)
+add_subdirectory(render)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_link_libraries(${PROJECT_NAME} INTERFACE gg::core gg::render)
+
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
