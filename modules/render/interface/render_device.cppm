@@ -1,29 +1,34 @@
 module;
 
+#include <memory>
+
 #include <d3d12.h>
+
 #include <wrl.h>
 
 export module gg.render.device;
 
+import gg.render.helpers;
+import gg.render.adapter;
+
 export namespace gg
 {
-class RenderDevice
+
+class Device
 {
 public:
-    RenderDevice()
-    {
-        #if defined (_DEBUG)
-            Microsoft::WRL::ComPtr<ID3D12Debug> debug_controller;
-            if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
-            {
-                debug_controller->EnableDebugLayer();
-            }
-        #endif
-    }
+    static void enableDebugLayer();
 
-    ~RenderDevice() = default;
+    static std::shared_ptr<Device> create(std::shared_ptr<Adapter> adapter = nullptr);
+
+protected:
+    Device(std::shared_ptr<Adapter> adapter);
+    virtual ~Device() = default;
 
 private:
+    Microsoft::WRL::ComPtr<ID3D12Device2> device;
+
+    std::shared_ptr<Adapter> adapter;
 };
 
 } // namespace gg;
