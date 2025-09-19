@@ -24,20 +24,25 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 file(GLOB_RECURSE INTERFACE_MODULES interface/*.cppm)
 file(GLOB_RECURSE IMPLEMENTATION_MODULES implementation/*.cpp)
 
-add_library(${PROJECT_NAME} STATIC)
+set(MODULE_SOURCES ${INTERFACE_MODULES} ${IMPLEMENTATION_MODULES})
+
+add_library(${PROJECT_NAME} MODULE)
+
+#target_sources(${PROJECT_NAME} PUBLIC FILE_SET interface_modules TYPE CXX_MODULES FILES ${MODULE_SOURCES})
 
 target_sources(${PROJECT_NAME} PUBLIC FILE_SET interface_modules TYPE CXX_MODULES FILES ${INTERFACE_MODULES})
-
 target_sources(${PROJECT_NAME} PRIVATE ${IMPLEMENTATION_MODULES})
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /std:c++23
                                                    /experimental:module)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules)
+    #target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules-ts)
 endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE d3d12)
 
 add_library(gg::render ALIAS render)
 

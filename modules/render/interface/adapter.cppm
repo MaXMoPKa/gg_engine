@@ -9,16 +9,16 @@ module;
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
-export module gg.render.adapter;
+export module render:adapter;
 
-export namespace gg
+namespace gg
 {
 
-class Adapter;
-using AdapterList = std::vector<std::shared_ptr<Adapter>>;
-
-class Adapter
+export class Adapter
 {
+public:
+    using AdapterList = std::vector<std::shared_ptr<Adapter>>;
+
 public:
     [[nodiscard]] static AdapterList getAdapters(DXGI_GPU_PREFERENCE gpu_preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 

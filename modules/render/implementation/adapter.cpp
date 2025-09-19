@@ -7,7 +7,9 @@ module;
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
-module gg.render.adapter;
+module render;
+
+import :adapter;
 
 import gg.render.helpers;
 
@@ -24,7 +26,7 @@ public:
     ~MakeAdapter() override {}
 };
 
-AdapterList Adapter::getAdapters(DXGI_GPU_PREFERENCE gpu_preference)
+Adapter::AdapterList Adapter::getAdapters(DXGI_GPU_PREFERENCE gpu_preference)
 {
     using namespace Microsoft::WRL;
 

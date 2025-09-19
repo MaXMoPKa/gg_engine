@@ -1,14 +1,18 @@
 module;
 
 #include <memory>
+#include <cassert>
 
 #include <dxgi1_6.h>
 #include <d3d12.h>
 
 #include <wrl.h>
 
-module gg.render.device;
+module render;
 
+import :device;
+import :adapter;
+import :command_queue;
 import gg.render.helpers;
 
 namespace gg
@@ -36,6 +40,35 @@ std::shared_ptr<Device> Device::create(std::shared_ptr<Adapter> adapter)
    return std::make_shared<MakeDevice>(adapter);
 }
 
+CommandQueue& Device::getCommandQueue(D3D12_COMMAND_LIST_TYPE type)
+{
+    CommandQueue* command_queue;
+    switch(type)
+    {
+    case D3D12_COMMAND_LIST_TYPE_DIRECT:
+    {
+        command_queue = direct_command_queue.get();
+        break;
+    }
+    case D3D12_COMMAND_LIST_TYPE_COPY:
+    {
+        command_queue = copy_command_queue.get();
+        break;
+    }
+    case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+    {
+        command_queue = compute_command_queue.get();
+        break;
+    }
+    default:
+    {
+        assert(false && "Invalid command queue type.");
+    }
+    }
+
+    return *command_queue;
+}
+
 Device::Device(std::shared_ptr<Adapter> adapter)
     : adapter{adapter}
 {
@@ -50,5 +83,7 @@ Device::Device(std::shared_ptr<Adapter> adapter)
 
     throwIfFailed(D3D12CreateDevice(dxgi_adapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS(&device)));
 }
+
+    Device::~Device() {}
 
 } // namespace gg;
