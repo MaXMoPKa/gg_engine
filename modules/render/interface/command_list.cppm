@@ -43,7 +43,7 @@ protected:
 
     [[nodiscard]] inline std::shared_ptr<CommandList> getGenerateMipsCommandList() const
     {
-        return compute_command_list;
+        return this->compute_command_list;
     }
 
 private:

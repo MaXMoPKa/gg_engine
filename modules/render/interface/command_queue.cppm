@@ -20,7 +20,6 @@ class Device;
 export class CommandQueue
 {
 public:
-
     std::shared_ptr<CommandList> getCommandList();
 
     uint64_t executeCommandList(std::shared_ptr<CommandList> command_list);
@@ -60,6 +59,13 @@ private:
     std::atomic_bool is_process_in_flight_command_lists;
     std::mutex process_in_flight_command_lists_thread_mutex;
     std::condition_variable process_in_flight_command_lists_thread_cv;
+};
+
+export class MakeCommandQueue : public CommandQueue
+{
+public:
+    MakeCommandQueue(Device& device, D3D12_COMMAND_LIST_TYPE type);
+    ~MakeCommandQueue() override;
 };
 
 }

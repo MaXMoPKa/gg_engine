@@ -16,16 +16,6 @@ import gg.render.helpers;
 namespace gg
 {
 
-class MakeAdapter : public Adapter
-{
-public:
-    MakeAdapter(Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter)
-        : Adapter(dxgi_adapter)
-    {}
-
-    ~MakeAdapter() override {}
-};
-
 Adapter::AdapterList Adapter::getAdapters(DXGI_GPU_PREFERENCE gpu_preference)
 {
     using namespace Microsoft::WRL;
@@ -97,5 +87,11 @@ Adapter::Adapter(Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter)
         throwIfFailed(adapter->GetDesc3(&adapter_descriptor));
     }
 }
+
+    MakeAdapter::MakeAdapter(Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter)
+        : Adapter(dxgi_adapter)
+    {}
+
+    MakeAdapter::~MakeAdapter() {}
 
 } // namespace gg;

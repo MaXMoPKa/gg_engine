@@ -26,12 +26,12 @@ public:
 
     [[nodiscard]] inline Microsoft::WRL::ComPtr<IDXGIAdapter4> getDXGIAdapter() const
     {
-        return adapter;
+        return this->adapter;
     }
 
     [[nodiscard]] inline const std::wstring getDescriptor() const
     {
-        return adapter_descriptor.Description;
+        return this->adapter_descriptor.Description;
     }
 protected:
     Adapter(Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter);
@@ -40,6 +40,13 @@ protected:
 private:
     Microsoft::WRL::ComPtr<IDXGIAdapter4> adapter;
     DXGI_ADAPTER_DESC3                    adapter_descriptor;
+};
+
+export class MakeAdapter : public Adapter
+{
+public:
+    MakeAdapter(Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter);
+    ~MakeAdapter() override;
 };
 
 } // namespace gg;

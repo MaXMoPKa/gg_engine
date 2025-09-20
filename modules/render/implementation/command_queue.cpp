@@ -19,18 +19,17 @@ import gg.render.helpers;
 
 namespace gg
 {
-
     std::shared_ptr<CommandList> CommandQueue::getCommandList()
     {
         std::shared_ptr<CommandList> command_list;
 
-        if(!available_command_lists.empty())
+        if(!this->available_command_lists.empty())
         {
-            available_command_lists.try_pop(command_list);
+            this->available_command_lists.try_pop(command_list);
         }
         else
         {
-            command_list = std::make_shared<MakeCommandList>(device, command_list_type);
+            command_list = std::make_shared<MakeCommandList>(this->device, this->command_list_type);
         }
 
         return command_list;
@@ -84,12 +83,12 @@ namespace gg
 
         for(std::shared_ptr<CommandList> command_list : to_be_queued)
         {
-            in_flight_command_lists.push({fence_value, command_list});
+            this->in_flight_command_lists.push({fence_value, command_list});
         }
 
         if(generate_mips_command_lists.size() > 0)
         {
-            CommandQueue& compute_queue = device.getCommandQueue(D3D12_COMMAND_LIST_TYPE_COMPUTE);
+            CommandQueue& compute_queue = this->device.getCommandQueue(D3D12_COMMAND_LIST_TYPE_COMPUTE);
             compute_queue.wait(*this);
             compute_queue.executeCommandLists(generate_mips_command_lists);
         }
@@ -100,7 +99,7 @@ namespace gg
     uint64_t CommandQueue::signal()
     {
         uint64_t fence_value = ++(this->fence_value);
-        command_queue->Signal(fence.Get(), fence_value);
+        this->command_queue->Signal(this->fence.Get(), fence_value);
         return fence_value;
     }
 
@@ -111,12 +110,12 @@ namespace gg
 
     void CommandQueue::waitForFenceValue(uint64_t fence_value)
     {
-        if(isFenceComplete(fence_value))
+        if(this->isFenceComplete(fence_value))
         {
             HANDLE event = ::CreateEvent(NULL, FALSE, FALSE, NULL);
             if(event)
             {
-                fence->SetEventOnCompletion(fence_value, event);
+                this->fence->SetEventOnCompletion(fence_value, event);
                 ::WaitForSingleObject(event, DWORD_MAX);
 
                 ::CloseHandle(event);
@@ -126,9 +125,9 @@ namespace gg
 
     void CommandQueue::flush()
     {
-        std::unique_lock<std::mutex> lock(process_in_flight_command_lists_thread_mutex);
-        process_in_flight_command_lists_thread_cv.wait(lock, [this]{return in_flight_command_lists.empty();});
-        waitForFenceValue(fence_value);
+        std::unique_lock<std::mutex> lock(this->process_in_flight_command_lists_thread_mutex);
+        this->process_in_flight_command_lists_thread_cv.wait(lock, [this]{return this->in_flight_command_lists.empty();});
+        this->waitForFenceValue(this->fence_value);
     }
 
     void CommandQueue::wait(const CommandQueue& other)
@@ -138,14 +137,14 @@ namespace gg
 
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> CommandQueue::getD3D12CommandQueue() const
     {
-        return command_queue;
+        return this->command_queue;
     }
 
     CommandQueue::CommandQueue(Device& device, D3D12_COMMAND_LIST_TYPE type)
         : device{device}
         , command_list_type{type}
     {
-        Microsoft::WRL::ComPtr<ID3D12Device2> d3d12_device = device.getD3D12Device();
+        Microsoft::WRL::ComPtr<ID3D12Device2> d3d12_device = this->device.getD3D12Device();
 
         D3D12_COMMAND_QUEUE_DESC desc = {};
         desc.Type = type;
@@ -153,8 +152,8 @@ namespace gg
         desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         desc.NodeMask = 0;
 
-        throwIfFailed(d3d12_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&command_queue)));
-        throwIfFailed(d3d12_device->CreateFence(fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
+        throwIfFailed(d3d12_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&this->command_queue)));
+        throwIfFailed(d3d12_device->CreateFence(fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->fence)));
 
         switch(type)
         {
@@ -213,40 +212,46 @@ namespace gg
 
         }
 
-        process_in_flight_command_lists_thread = std::thread(&CommandQueue::processInFlightCommandLists, this);
-        setThreadName(process_in_flight_command_lists_thread, thread_name);
+        this->process_in_flight_command_lists_thread = std::thread(&CommandQueue::processInFlightCommandLists, this);
+        setThreadName(this->process_in_flight_command_lists_thread, thread_name);
     }
 
     CommandQueue::~CommandQueue()
     {
-        is_process_in_flight_command_lists = false;
-        process_in_flight_command_lists_thread.join();
+        this->is_process_in_flight_command_lists = false;
+        this->process_in_flight_command_lists_thread.join();
     }
 
     void CommandQueue::processInFlightCommandLists()
     {
-        std::unique_lock<std::mutex> lock(process_in_flight_command_lists_thread_mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lock(this->process_in_flight_command_lists_thread_mutex, std::defer_lock);
 
-        while(is_process_in_flight_command_lists)
+        while(this->is_process_in_flight_command_lists)
         {
             CommandListEntry command_list_entry;
 
             lock.lock();
-            while(in_flight_command_lists.try_pop(command_list_entry))
+            while(this->in_flight_command_lists.try_pop(command_list_entry))
             {
                 uint64_t fence_value = std::get<0>(command_list_entry);
                 std::shared_ptr<CommandList> command_list = std::get<1>(command_list_entry);
 
-                waitForFenceValue(fence_value);
+                this->waitForFenceValue(fence_value);
 
                 command_list->reset();
 
-                available_command_lists.push(command_list);
+                this->available_command_lists.push(command_list);
             }
             lock.unlock();
-            process_in_flight_command_lists_thread_cv.notify_one();
+            this->process_in_flight_command_lists_thread_cv.notify_one();
 
             std::this_thread::yield();
         }
     }
+
+    MakeCommandQueue::MakeCommandQueue(Device& device, D3D12_COMMAND_LIST_TYPE type)
+        : CommandQueue(device, type)
+    {}
+
+    MakeCommandQueue::~MakeCommandQueue() {}
 } // namespace gg;

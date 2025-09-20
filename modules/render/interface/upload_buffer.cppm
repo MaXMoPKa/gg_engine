@@ -53,7 +53,6 @@ export class MakeUploadBuffer : public UploadBuffer
 {
 public:
     MakeUploadBuffer(Device& device, size_t page_size = 2 * 1024 * 1024);
-
     ~MakeUploadBuffer() override;
 };
 

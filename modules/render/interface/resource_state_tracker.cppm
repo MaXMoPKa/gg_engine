@@ -49,19 +49,19 @@ private:
             if(subresource == D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
             {
                 this->state = state;
-                subresource_state.clear();
+                this->subresource_state.clear();
             }
             else
             {
-                subresource_state[subresource] = state;
+                this->subresource_state[subresource] = state;
             }
         }
 
         inline D3D12_RESOURCE_STATES getSubresourceState(UINT subresource)
         {
             D3D12_RESOURCE_STATES state = this->state;
-            const auto iter = subresource_state.find(subresource);
-            if(iter != subresource_state.end())
+            const auto iter = this->subresource_state.find(subresource);
+            if(iter != this->subresource_state.end())
             {
                 state = iter->second;
             }
