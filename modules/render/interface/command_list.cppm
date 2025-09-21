@@ -2,6 +2,7 @@ module;
 
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 #include <d3d12.h>
 
@@ -14,6 +15,7 @@ namespace gg
 
 class Device;
 class ResourceStateTracker;
+class Resource;
 class DynamicDescriptorHeap;
 class UploadBuffer;
 
@@ -24,6 +26,17 @@ public:
     {
         return this->command_list;
     }
+
+    void transitionBarrier(const std::shared_ptr<Resource>& resource, D3D12_RESOURCE_STATES state_after,
+                           UINT subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, bool flush_barriers = false);
+    void transitionBarrier(Microsoft::WRL::ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES state_after,
+                           UINT subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, bool flush_barriers = false);
+
+    void copyResource(const std::shared_ptr<Resource>& dst_resource, const std::shared_ptr<Resource>& src_resource);
+    void copyResource(Microsoft::WRL::ComPtr<ID3D12Resource> dst_resource, Microsoft::WRL::ComPtr<ID3D12Resource> src_resource);
+
+    void resolveSubresource(const std::shared_ptr<Resource>& dst_resource, const std::shared_ptr<Resource>& src_resource,
+                            uint32_t dst_subresource = 0, uint32_t src_subresource = 0);
 
     void flushResourceBarriers();
 
@@ -45,6 +58,10 @@ protected:
     {
         return this->compute_command_list;
     }
+
+private:
+    void trackResource(Microsoft::WRL::ComPtr<ID3D12Object> object);
+    void trackResource(const std::shared_ptr<Resource>& resource);
 
 private:
     Device& device;

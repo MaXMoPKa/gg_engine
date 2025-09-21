@@ -20,6 +20,10 @@ export class ResourceStateTracker
 public:
     static void lock();
     static void unlock();
+    static void addGlobalResourceState(ID3D12Resource* resource, D3D12_RESOURCE_STATES state);
+
+public:
+    void resourceBarrier(const D3D12_RESOURCE_BARRIER& barrier);
 
     uint32_t flushPendingResourceBarriers(const std::shared_ptr<CommandList>& command_list);
 

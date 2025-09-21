@@ -31,6 +31,62 @@ namespace gg
         is_locked = false;
     }
 
+    void ResourceStateTracker::addGlobalResourceState(ID3D12Resource *resource, D3D12_RESOURCE_STATES state)
+    {
+        if(resource != nullptr)
+        {
+            std::lock_guard<std::mutex> lock(global_mutex);
+            global_resource_state[resource].setSubresourceState(D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, state);
+        }
+    }
+
+    void ResourceStateTracker::resourceBarrier(const D3D12_RESOURCE_BARRIER& barrier)
+    {
+        if(barrier.Type == D3D12_RESOURCE_BARRIER_TYPE_TRANSITION)
+        {
+            const D3D12_RESOURCE_TRANSITION_BARRIER& transition_barrier = barrier.Transition;
+
+            const auto iter = this->final_resource_state.find(transition_barrier.pResource);
+            if(iter != this->final_resource_state.end())
+            {
+                ResourceState& resource_state = iter->second;
+                if(transition_barrier.Subresource == D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES && !resource_state.subresource_state.empty())
+                {
+                    for(auto [subresource, state] : resource_state.subresource_state)
+                    {
+                        if(transition_barrier.StateAfter != state)
+                        {
+                            D3D12_RESOURCE_BARRIER new_barrier = barrier;
+                            new_barrier.Transition.Subresource = subresource;
+                            new_barrier.Transition.StateBefore = state;
+                            this->resource_barriers.push_back(new_barrier);
+                        }
+                    }
+                }
+                else
+                {
+                    D3D12_RESOURCE_STATES final_state = resource_state.getSubresourceState(transition_barrier.Subresource);
+                    if(transition_barrier.StateAfter != final_state)
+                    {
+                        D3D12_RESOURCE_BARRIER new_barrier = barrier;
+                        new_barrier.Transition.StateBefore = final_state;
+                        this->resource_barriers.push_back(new_barrier);
+                    }
+                }
+            }
+            else
+            {
+                this->pending_resource_barriers.push_back(barrier);
+            }
+
+            this->final_resource_state[transition_barrier.pResource].setSubresourceState(transition_barrier.Subresource, transition_barrier.StateAfter);
+        }
+        else
+        {
+            this->resource_barriers.push_back(barrier);
+        }
+    }
+
     uint32_t ResourceStateTracker::flushPendingResourceBarriers(const std::shared_ptr<CommandList>& command_list)
     {
         assert(is_locked);

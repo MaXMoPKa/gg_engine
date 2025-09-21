@@ -11,3 +11,7 @@ export import :upload_buffer;
 export import :descriptor_allocator_page;
 export import :descriptor_allocator;
 export import :descriptor_allocation;
+export import :swap_chain;
+export import :render_target;
+export import :resource;
+export import :texture;

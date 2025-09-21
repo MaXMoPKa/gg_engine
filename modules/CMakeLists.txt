@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.31.5)
 
 project(gg_engine)
 
+add_subdirectory(third_party/DirectXTex)
+
 add_subdirectory(core)
 add_subdirectory(render)
 

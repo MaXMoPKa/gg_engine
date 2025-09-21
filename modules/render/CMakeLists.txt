@@ -42,7 +42,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules-ts)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE d3d12)
+target_link_libraries(${PROJECT_NAME} PRIVATE d3d12 dxgi DirectXTex)
 
 add_library(gg::render ALIAS render)
 

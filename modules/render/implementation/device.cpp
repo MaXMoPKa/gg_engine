@@ -13,6 +13,7 @@ module render;
 import :device;
 import :adapter;
 import :command_queue;
+import :descriptor_allocation;
 import gg.render.helpers;
 
 namespace gg
@@ -27,6 +28,28 @@ namespace gg
     std::shared_ptr<Device> Device::create(std::shared_ptr<Adapter> adapter)
     {
         return std::make_shared<MakeDevice>(adapter);
+    }
+
+    DescriptorAllocation Device::allocateDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t num_descriptors)
+    {
+       return this->descriptor_allocators[type]->allocate(num_descriptors);
+    }
+
+    std::shared_ptr<SwapChain> Device::createSwapChain(HWND window_handle, DXGI_FORMAT back_buffer_format)
+    {
+        return std::make_shared<MakeSwapChain>(*this, window_handle, back_buffer_format);
+    }
+
+    std::shared_ptr<Texture> Device::createTexture(const D3D12_RESOURCE_DESC& resource_desc, const D3D12_CLEAR_VALUE* clear_value)
+    {
+        std::shared_ptr<Texture> texture = std::make_shared<MakeTexture>(*this, resource_desc, clear_value);
+        return texture;
+    }
+
+    std::shared_ptr<Texture> Device::createTexture(Microsoft::WRL::ComPtr<ID3D12Resource> resource, const D3D12_CLEAR_VALUE* clear_value)
+    {
+        std::shared_ptr<Texture> texture = std::make_shared<MakeTexture>(*this, resource, clear_value);
+        return texture;
     }
 
     CommandQueue& Device::getCommandQueue(D3D12_COMMAND_LIST_TYPE type)
@@ -56,6 +79,21 @@ namespace gg
         }
 
         return *command_queue;
+    }
+
+    void Device::flush()
+    {
+        this->direct_command_queue->flush();
+        this->compute_command_queue->flush();
+        this->copy_command_queue->flush();
+    }
+
+    void Device::releaseStaleDescriptors()
+    {
+        for(int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+        {
+            this->descriptor_allocators[i]->releaseStaleDescriptors();
+        }
     }
 
     Device::Device(std::shared_ptr<Adapter> adapter)
