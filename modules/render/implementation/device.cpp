@@ -59,17 +59,17 @@ namespace gg
         {
             case D3D12_COMMAND_LIST_TYPE_DIRECT:
             {
-                command_queue = direct_command_queue.get();
+                command_queue = this->direct_command_queue.get();
                 break;
             }
             case D3D12_COMMAND_LIST_TYPE_COPY:
             {
-                command_queue = copy_command_queue.get();
+                command_queue = this->copy_command_queue.get();
                 break;
             }
             case D3D12_COMMAND_LIST_TYPE_COMPUTE:
             {
-                command_queue = compute_command_queue.get();
+                command_queue = this->compute_command_queue.get();
                 break;
             }
             default:
@@ -108,7 +108,7 @@ namespace gg
 
         ComPtr<IDXGIAdapter4> dxgi_adapter = this->adapter->getDXGIAdapter();
 
-        throwIfFailed(D3D12CreateDevice(dxgi_adapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS(&this->device)));
+        throwIfFailed(D3D12CreateDevice(dxgi_adapter.Get(), D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS(&this->d3d12_device)));
 
         this->direct_command_queue = std::make_unique<MakeCommandQueue>(*this, D3D12_COMMAND_LIST_TYPE_DIRECT);
         this->compute_command_queue = std::make_unique<MakeCommandQueue>(*this, D3D12_COMMAND_LIST_TYPE_COMPUTE);
@@ -121,7 +121,7 @@ namespace gg
 
         D3D12_FEATURE_DATA_ROOT_SIGNATURE feature_data;
         feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-        if(FAILED(this->device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &feature_data, sizeof(D3D12_FEATURE_DATA_ROOT_SIGNATURE))))
+        if(FAILED(this->d3d12_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &feature_data, sizeof(D3D12_FEATURE_DATA_ROOT_SIGNATURE))))
         {
             feature_data.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
         }

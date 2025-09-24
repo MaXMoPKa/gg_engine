@@ -52,13 +52,13 @@ public:
     [[nodiscard]] D3D12_VIEWPORT getViewport(DirectX::XMFLOAT2 scale = {1.0f, 1.0f}, DirectX::XMFLOAT2 bias = {0.0f, 0.0f},
                                              float min_depth = 0.0f, float max_depth = 1.0f) const;
 
-    const std::vector<std::shared_ptr<Texture>>& getTextures() const;
+    [[nodiscard]] const std::vector<std::shared_ptr<Texture>>& getTextures() const;
 
-    D3D12_RT_FORMAT_ARRAY getRenderTargetFormats() const;
+    [[nodiscard]] D3D12_RT_FORMAT_ARRAY getRenderTargetFormats() const;
 
-    DXGI_FORMAT getDepthStencilFormat() const;
+    [[nodiscard]] DXGI_FORMAT getDepthStencilFormat() const;
 
-    DXGI_SAMPLE_DESC getSampleDesc() const;
+    [[nodiscard]] DXGI_SAMPLE_DESC getSampleDesc() const;
 
     void reset();
     /*{

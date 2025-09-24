@@ -20,11 +20,10 @@ public:
     virtual ~DynamicDescriptorHeap();
 
     void reset();
-
 private:
     Device& device;
 
-    D3D12_DESCRIPTOR_HEAP_TYPE descriptor_heap_type;
+    D3D12_DESCRIPTOR_HEAP_TYPE d3d12_descriptor_heap_type;
 
     uint32_t num_descriptors_per_heap;
 };

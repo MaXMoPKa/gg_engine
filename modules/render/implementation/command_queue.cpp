@@ -29,7 +29,7 @@ namespace gg
         }
         else
         {
-            command_list = std::make_shared<MakeCommandList>(this->device, this->command_list_type);
+            command_list = std::make_shared<MakeCommandList>(this->device, this->d3d12_command_list_type);
         }
 
         return command_list;
@@ -76,7 +76,7 @@ namespace gg
         }
 
         UINT num_command_lists = static_cast<UINT>(d3d12_command_lists.size());
-        this->command_queue->ExecuteCommandLists(num_command_lists, d3d12_command_lists.data());
+        this->d3d12_command_queue->ExecuteCommandLists(num_command_lists, d3d12_command_lists.data());
         uint64_t fence_value = signal();
 
         ResourceStateTracker::unlock();
@@ -99,13 +99,13 @@ namespace gg
     uint64_t CommandQueue::signal()
     {
         uint64_t fence_value = ++(this->fence_value);
-        this->command_queue->Signal(this->fence.Get(), fence_value);
+        this->d3d12_command_queue->Signal(this->d3d12_fence.Get(), fence_value);
         return fence_value;
     }
 
     bool CommandQueue::isFenceComplete(uint64_t fence_value)
     {
-        return this->fence->GetCompletedValue() >= fence_value;
+        return this->d3d12_fence->GetCompletedValue() >= fence_value;
     }
 
     void CommandQueue::waitForFenceValue(uint64_t fence_value)
@@ -115,7 +115,7 @@ namespace gg
             HANDLE event = ::CreateEvent(NULL, FALSE, FALSE, NULL);
             if(event)
             {
-                this->fence->SetEventOnCompletion(fence_value, event);
+                this->d3d12_fence->SetEventOnCompletion(fence_value, event);
                 ::WaitForSingleObject(event, DWORD_MAX);
 
                 ::CloseHandle(event);
@@ -132,17 +132,17 @@ namespace gg
 
     void CommandQueue::wait(const CommandQueue& other)
     {
-        this->command_queue->Wait(other.fence.Get(), other.fence_value);
+        this->d3d12_command_queue->Wait(other.d3d12_fence.Get(), other.fence_value);
     }
 
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> CommandQueue::getD3D12CommandQueue() const
     {
-        return this->command_queue;
+        return this->d3d12_command_queue;
     }
 
     CommandQueue::CommandQueue(Device& device, D3D12_COMMAND_LIST_TYPE type)
         : device{device}
-        , command_list_type{type}
+        , d3d12_command_list_type{type}
     {
         Microsoft::WRL::ComPtr<ID3D12Device2> d3d12_device = this->device.getD3D12Device();
 
@@ -152,24 +152,24 @@ namespace gg
         desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         desc.NodeMask = 0;
 
-        throwIfFailed(d3d12_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&this->command_queue)));
-        throwIfFailed(d3d12_device->CreateFence(fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->fence)));
+        throwIfFailed(d3d12_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&this->d3d12_command_queue)));
+        throwIfFailed(d3d12_device->CreateFence(fence_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->d3d12_fence)));
 
         switch(type)
         {
             case D3D12_COMMAND_LIST_TYPE_COPY:
             {
-                command_queue->SetName(L"Copy Command Queue");
+                d3d12_command_queue->SetName(L"Copy Command Queue");
                 break;
             }
             case D3D12_COMMAND_LIST_TYPE_COMPUTE:
             {
-                command_queue->SetName(L"Compute Command Queue");
+                d3d12_command_queue->SetName(L"Compute Command Queue");
                 break;
             }
             case D3D12_COMMAND_LIST_TYPE_DIRECT:
             {
-                command_queue->SetName(L"Direct Command Queue");
+                d3d12_command_queue->SetName(L"Direct Command Queue");
                 break;
             }
             case D3D12_COMMAND_LIST_TYPE_BUNDLE:

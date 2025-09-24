@@ -69,14 +69,13 @@ public:
 
     [[nodiscard]] inline DXGI_FORMAT getRenderTargetFormat() const
     {
-        return this->render_target_format;
+        return this->d3d12_render_target_format;
     }
 
     Microsoft::WRL::ComPtr<IDXGISwapChain4> getDXGISwapChain() const
     {
-        return this->swap_chain;
+        return this->d3d12_swap_chain;
     }
-
 protected:
     SwapChain(Device& device, HWND window_handle, DXGI_FORMAT render_target_format = DXGI_FORMAT_R10G10B10A2_UNORM);
     virtual ~SwapChain();
@@ -85,7 +84,7 @@ protected:
 private:
     Device& device;
     CommandQueue& command_queue;
-    Microsoft::WRL::ComPtr<IDXGISwapChain4> swap_chain;
+    Microsoft::WRL::ComPtr<IDXGISwapChain4> d3d12_swap_chain;
     std::shared_ptr<Texture> back_buffer_textures[buffer_count];
     mutable RenderTarget render_target;
 
@@ -99,7 +98,7 @@ private:
     uint32_t width;
     uint32_t height;
 
-    DXGI_FORMAT render_target_format;
+    DXGI_FORMAT d3d12_render_target_format;
 
     bool v_sync;
 

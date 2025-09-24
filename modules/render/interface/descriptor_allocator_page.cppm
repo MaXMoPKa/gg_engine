@@ -78,9 +78,9 @@ private:
     FreeListBySize free_list_by_size;
     StaleDescriptorQueue stale_descriptors;
 
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap;
-    D3D12_DESCRIPTOR_HEAP_TYPE heap_type;
-    D3D12_CPU_DESCRIPTOR_HANDLE base_descriptor;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> d3d12_descriptor_heap;
+    D3D12_DESCRIPTOR_HEAP_TYPE d3d12_heap_type;
+    D3D12_CPU_DESCRIPTOR_HANDLE d3d12_base_descriptor;
     uint32_t descriptor_handle_increment_size;
     uint32_t num_descriptors_in_heap;
     uint32_t num_free_handles;

@@ -26,9 +26,8 @@ public:
     static void enableDebugLayer();
 
     [[nodiscard]] static std::shared_ptr<Device> create(std::shared_ptr<Adapter> adapter = nullptr);
-
 public:
-    DescriptorAllocation allocateDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t num_descriptors = 1);
+    [[nodiscard]] DescriptorAllocation allocateDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t num_descriptors = 1);
 
     [[nodiscard]] std::shared_ptr<SwapChain> createSwapChain(HWND hwnd, DXGI_FORMAT back_buffer_format = DXGI_FORMAT_R10G10B10A2_UNORM);
 
@@ -37,7 +36,7 @@ public:
 
     [[nodiscard]] inline Microsoft::WRL::ComPtr<ID3D12Device2> getD3D12Device() const
     {
-        return this->device;
+        return this->d3d12_device;
     }
 
     [[nodiscard]] inline std::shared_ptr<Adapter> getAdapter() const
@@ -50,13 +49,11 @@ public:
     void flush();
 
     void releaseStaleDescriptors();
-
 protected:
     Device(std::shared_ptr<Adapter> adapter);
     virtual ~Device();
-
 private:
-    Microsoft::WRL::ComPtr<ID3D12Device2> device;
+    Microsoft::WRL::ComPtr<ID3D12Device2> d3d12_device;
 
     std::shared_ptr<Adapter> adapter;
 

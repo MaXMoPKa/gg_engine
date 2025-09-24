@@ -10,7 +10,7 @@ module;
 
 export module render:command_queue;
 
-import gg.render.thread_save_queue;
+import :thread_save_queue;
 
 namespace gg
 {
@@ -20,19 +20,19 @@ class Device;
 export class CommandQueue
 {
 public:
-    std::shared_ptr<CommandList> getCommandList();
+    [[nodiscard]] std::shared_ptr<CommandList> getCommandList();
 
-    uint64_t executeCommandList(std::shared_ptr<CommandList> command_list);
-    uint64_t executeCommandLists(const std::vector<std::shared_ptr<CommandList>>& command_lists);
+    [[nodiscard]] uint64_t executeCommandList(std::shared_ptr<CommandList> command_list);
+    [[nodiscard]] uint64_t executeCommandLists(const std::vector<std::shared_ptr<CommandList>>& command_lists);
 
-    uint64_t signal();
-    bool isFenceComplete(uint64_t fence_value);
+    [[nodiscard]] uint64_t signal();
+    [[nodiscard]] bool isFenceComplete(uint64_t fence_value);
     void waitForFenceValue(uint64_t fence_value);
     void flush();
 
     void wait(const CommandQueue& other);
 
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> getD3D12CommandQueue() const;
+    [[nodiscard]] Microsoft::WRL::ComPtr<ID3D12CommandQueue> getD3D12CommandQueue() const;
 
 protected:
     friend class std::default_delete<CommandQueue>;
@@ -47,9 +47,9 @@ private:
     using CommandListEntry = std::tuple<uint64_t, std::shared_ptr<CommandList>>;
 
     Device& device;
-    D3D12_COMMAND_LIST_TYPE command_list_type;
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue;
-    Microsoft::WRL::ComPtr<ID3D12Fence> fence;
+    D3D12_COMMAND_LIST_TYPE d3d12_command_list_type;
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_command_queue;
+    Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence;
     std::atomic_uint64_t fence_value;
 
     ThreadSaveQueue<CommandListEntry> in_flight_command_lists;

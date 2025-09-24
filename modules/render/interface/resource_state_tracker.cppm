@@ -25,7 +25,7 @@ public:
 public:
     void resourceBarrier(const D3D12_RESOURCE_BARRIER& barrier);
 
-    uint32_t flushPendingResourceBarriers(const std::shared_ptr<CommandList>& command_list);
+    [[nodiscard]] uint32_t flushPendingResourceBarriers(const std::shared_ptr<CommandList>& command_list);
 
     void flushResourceBarriers(const std::shared_ptr<CommandList>& command_list);
 

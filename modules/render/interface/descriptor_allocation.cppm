@@ -41,7 +41,7 @@ private:
     void free();
 
 private:
-    D3D12_CPU_DESCRIPTOR_HANDLE descriptor;
+    D3D12_CPU_DESCRIPTOR_HANDLE d3d12_descriptor;
     uint32_t num_handles;
     uint32_t descriptor_size;
 

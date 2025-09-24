@@ -55,7 +55,7 @@ protected:
     Device& device;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource;
-    D3D12_FEATURE_DATA_FORMAT_SUPPORT format_support;
+    D3D12_FEATURE_DATA_FORMAT_SUPPORT d3d12_format_support;
     std::unique_ptr<D3D12_CLEAR_VALUE> d3d12_clear_value;
     std::wstring resource_name;
 private:

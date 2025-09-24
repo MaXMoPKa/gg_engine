@@ -15,3 +15,4 @@ export import :swap_chain;
 export import :render_target;
 export import :resource;
 export import :texture;
+export import :thread_save_queue;

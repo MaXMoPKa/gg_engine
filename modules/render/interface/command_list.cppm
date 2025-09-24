@@ -24,7 +24,7 @@ export class CommandList : public std::enable_shared_from_this<CommandList>
 public:
     [[nodiscard]] inline Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> getD3D12CommandList() const
     {
-        return this->command_list;
+        return this->d3d12_command_list;
     }
 
     void transitionBarrier(const std::shared_ptr<Resource>& resource, D3D12_RESOURCE_STATES state_after,
@@ -58,16 +58,14 @@ protected:
     {
         return this->compute_command_list;
     }
-
 private:
     void trackResource(Microsoft::WRL::ComPtr<ID3D12Object> object);
     void trackResource(const std::shared_ptr<Resource>& resource);
-
 private:
     Device& device;
-    D3D12_COMMAND_LIST_TYPE command_list_type;
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> command_list;
-    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator;
+    D3D12_COMMAND_LIST_TYPE d3d12_command_list_type;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> d3d12_command_list;
+    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> d3d12_command_allocator;
 
     std::shared_ptr<CommandList> compute_command_list;
 
@@ -81,7 +79,7 @@ private:
 
     std::unique_ptr<DynamicDescriptorHeap> dynamic_descriptor_heap[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 
-    ID3D12DescriptorHeap* descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+    ID3D12DescriptorHeap* d3d12_descriptor_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 
     using TrackedObjects = std::vector<Microsoft::WRL::ComPtr<ID3D12Object>>;
     TrackedObjects tracked_objects;

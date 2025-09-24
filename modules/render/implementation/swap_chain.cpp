@@ -29,7 +29,7 @@ SwapChain::SwapChain(Device& device, HWND window_handle, DXGI_FORMAT render_targ
     , fence_values{0}
     , width {0u}
     , height {0u}
-    , render_target_format{render_target_format}
+    , d3d12_render_target_format{render_target_format}
     , v_sync{true}
     , tearing_supported{false}
     , fullscreen{false}
@@ -61,7 +61,7 @@ SwapChain::SwapChain(Device& device, HWND window_handle, DXGI_FORMAT render_targ
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = {};
     swap_chain_desc.Width = this->width;
     swap_chain_desc.Height = this->height;
-    swap_chain_desc.Format = this->render_target_format;
+    swap_chain_desc.Format = this->d3d12_render_target_format;
     swap_chain_desc.Stereo = FALSE;
     swap_chain_desc.SampleDesc = {1, 0};
     swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -75,15 +75,15 @@ SwapChain::SwapChain(Device& device, HWND window_handle, DXGI_FORMAT render_targ
     Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain_1;
     throwIfFailed(dxgi_factory_5->CreateSwapChainForHwnd(d3d12_command_queue.Get(), this->window_handle, &swap_chain_desc, nullptr, nullptr, &dxgi_swap_chain_1));
 
-    throwIfFailed(dxgi_swap_chain_1.As(&this->swap_chain));
+    throwIfFailed(dxgi_swap_chain_1.As(&this->d3d12_swap_chain));
 
     throwIfFailed(dxgi_factory_5->MakeWindowAssociation(this->window_handle, DXGI_MWA_NO_ALT_ENTER));
 
-    this->current_back_buffer_index = this->swap_chain->GetCurrentBackBufferIndex();
+    this->current_back_buffer_index = this->d3d12_swap_chain->GetCurrentBackBufferIndex();
 
-    this->swap_chain->SetMaximumFrameLatency(this->buffer_count - 1);
+    this->d3d12_swap_chain->SetMaximumFrameLatency(this->buffer_count - 1);
 
-    this->frame_latency_waitable_objects_handle = this->swap_chain->GetFrameLatencyWaitableObject();
+    this->frame_latency_waitable_objects_handle = this->d3d12_swap_chain->GetFrameLatencyWaitableObject();
 
     this->updateRenderTargetViews();
 }
@@ -122,10 +122,10 @@ void SwapChain::resize(uint32_t width, uint32_t height)
         }
 
         DXGI_SWAP_CHAIN_DESC swap_chain_desc = {};
-        throwIfFailed(this->swap_chain->GetDesc(&swap_chain_desc));
-        throwIfFailed(this->swap_chain->ResizeBuffers(this->buffer_count, this->width, this->height, swap_chain_desc.BufferDesc.Format, swap_chain_desc.Flags));
+        throwIfFailed(this->d3d12_swap_chain->GetDesc(&swap_chain_desc));
+        throwIfFailed(this->d3d12_swap_chain->ResizeBuffers(this->buffer_count, this->width, this->height, swap_chain_desc.BufferDesc.Format, swap_chain_desc.Flags));
 
-        this->current_back_buffer_index = this->swap_chain->GetCurrentBackBufferIndex();
+        this->current_back_buffer_index = this->d3d12_swap_chain->GetCurrentBackBufferIndex();
 
         this->updateRenderTargetViews();
     }
@@ -159,11 +159,11 @@ UINT SwapChain::present(const std::shared_ptr<Texture>& texture)
 
     UINT sync_interval = this->v_sync ? 1 : 0;
     UINT present_flags = this->tearing_supported && !this->fullscreen && !this->v_sync ? DXGI_PRESENT_ALLOW_TEARING : 0;
-    throwIfFailed(this->swap_chain->Present(sync_interval, present_flags));
+    throwIfFailed(this->d3d12_swap_chain->Present(sync_interval, present_flags));
 
     this->fence_values[this->current_back_buffer_index] = this->command_queue.signal();
 
-    this->current_back_buffer_index = this->swap_chain->GetCurrentBackBufferIndex();
+    this->current_back_buffer_index = this->d3d12_swap_chain->GetCurrentBackBufferIndex();
 
     UINT64 fence_value = this->fence_values[this->current_back_buffer_index];
     this->command_queue.waitForFenceValue(fence_value);
@@ -178,7 +178,7 @@ void SwapChain::updateRenderTargetViews()
     for(UINT i = 0; i < this->buffer_count; ++i)
     {
         Microsoft::WRL::ComPtr<ID3D12Resource> back_buffer;
-        throwIfFailed(this->swap_chain->GetBuffer(i, IID_PPV_ARGS(&back_buffer)));
+        throwIfFailed(this->d3d12_swap_chain->GetBuffer(i, IID_PPV_ARGS(&back_buffer)));
 
         ResourceStateTracker::addGlobalResourceState(back_buffer.Get(), D3D12_RESOURCE_STATE_COMMON);
 

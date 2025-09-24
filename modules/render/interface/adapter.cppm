@@ -36,7 +36,6 @@ public:
 protected:
     Adapter(Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter);
     virtual ~Adapter() = default;
-
 private:
     Microsoft::WRL::ComPtr<IDXGIAdapter4> adapter;
     DXGI_ADAPTER_DESC3                    adapter_descriptor;

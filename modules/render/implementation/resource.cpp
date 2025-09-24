@@ -25,12 +25,12 @@ void Resource::setName(const std::wstring& name)
 
 bool Resource::checkFormatSupport(D3D12_FORMAT_SUPPORT1 format_support) const
 {
-    return (this->format_support.Support1 & format_support) != 0;
+    return (this->d3d12_format_support.Support1 & format_support) != 0;
 }
 
 bool Resource::checkFormatSupport(D3D12_FORMAT_SUPPORT2 format_support) const
 {
-    return (this->format_support.Support2 & format_support) != 0;
+    return (this->d3d12_format_support.Support2 & format_support) != 0;
 }
 
 Resource::Resource(Device& device, const D3D12_RESOURCE_DESC& resource_desc, const D3D12_CLEAR_VALUE* clear_value)
@@ -72,8 +72,8 @@ void Resource::checkFeatureSupport()
     Microsoft::WRL::ComPtr<ID3D12Device2> d3d12_device = this->device.getD3D12Device();
 
     D3D12_RESOURCE_DESC desc = this->d3d12_resource->GetDesc();
-    this->format_support.Format = desc.Format;
-    throwIfFailed(d3d12_device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT, &this->format_support, sizeof(D3D12_FEATURE_DATA_FORMAT_SUPPORT)));
+    this->d3d12_format_support.Format = desc.Format;
+    throwIfFailed(d3d12_device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT, &this->d3d12_format_support, sizeof(D3D12_FEATURE_DATA_FORMAT_SUPPORT)));
 }
  
 } // namespace gg;

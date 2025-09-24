@@ -19,7 +19,7 @@ namespace gg
 
 D3D12_DESCRIPTOR_HEAP_TYPE DescriptorAllocatorPage::getHeapType() const
 {
-    return this->heap_type;
+    return this->d3d12_heap_type;
 }
 
 bool DescriptorAllocatorPage::hasSpace(uint32_t num_descriptors) const
@@ -66,7 +66,7 @@ DescriptorAllocation DescriptorAllocatorPage::allocate(uint32_t num_descriptors)
     this->num_free_handles -= num_descriptors;
 
     D3D12_CPU_DESCRIPTOR_HANDLE handle;
-    handle.ptr = static_cast<SIZE_T>(this->base_descriptor.ptr + INT64(offset) * UINT64(this->descriptor_handle_increment_size));
+    handle.ptr = static_cast<SIZE_T>(this->d3d12_base_descriptor.ptr + INT64(offset) * UINT64(this->descriptor_handle_increment_size));
     return DescriptorAllocation(handle, num_descriptors, this->descriptor_handle_increment_size, shared_from_this());
 }
 
@@ -95,19 +95,19 @@ void DescriptorAllocatorPage::releaseStaleDescriptors()
 
 DescriptorAllocatorPage::DescriptorAllocatorPage(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t num_descriptors)
     : device{device}
-    , heap_type{type}
+    , d3d12_heap_type{type}
     , num_descriptors_in_heap{num_descriptors}
 {
     Microsoft::WRL::ComPtr<ID3D12Device2> d3d12_device = this->device.getD3D12Device();
 
     D3D12_DESCRIPTOR_HEAP_DESC heap_desc = {};
-    heap_desc.Type = this->heap_type;
+    heap_desc.Type = this->d3d12_heap_type;
     heap_desc.NumDescriptors = this->num_descriptors_in_heap;
 
-    throwIfFailed(d3d12_device->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(&this->descriptor_heap)));
+    throwIfFailed(d3d12_device->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(&this->d3d12_descriptor_heap)));
 
-    this->base_descriptor = this->descriptor_heap->GetCPUDescriptorHandleForHeapStart();
-    this->descriptor_handle_increment_size = d3d12_device->GetDescriptorHandleIncrementSize(this->heap_type);
+    this->d3d12_base_descriptor = this->d3d12_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+    this->descriptor_handle_increment_size = d3d12_device->GetDescriptorHandleIncrementSize(this->d3d12_heap_type);
     this->num_free_handles = this->num_descriptors_in_heap;
 
     this->addNewBlock(0, this->num_free_handles);
@@ -115,7 +115,7 @@ DescriptorAllocatorPage::DescriptorAllocatorPage(Device& device, D3D12_DESCRIPTO
 
 uint32_t DescriptorAllocatorPage::computeOffset(D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
-    return static_cast<uint32_t>(handle.ptr - this->base_descriptor.ptr) / this->descriptor_handle_increment_size;
+    return static_cast<uint32_t>(handle.ptr - this->d3d12_base_descriptor.ptr) / this->descriptor_handle_increment_size;
 }
 
 void DescriptorAllocatorPage::addNewBlock(uint32_t offset, uint32_t num_descriptors)

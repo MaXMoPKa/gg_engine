@@ -74,7 +74,7 @@ namespace gg
 
     DescriptorAllocator::DescriptorAllocator(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t num_descriptors_per_heap)
         : device{device}
-        , heap_type{type}
+        , d3d12_heap_type{type}
         , num_descriptors_per_heap{num_descriptors_per_heap}
     {}
 
@@ -82,7 +82,7 @@ namespace gg
 
     std::shared_ptr<DescriptorAllocatorPage> DescriptorAllocator::createAllocatorPage()
     {
-        std::shared_ptr<DescriptorAllocatorPage> new_page = std::make_shared<MakeDescriptorAllocatorPage>(this->device, this->heap_type, this->num_descriptors_per_heap);
+        std::shared_ptr<DescriptorAllocatorPage> new_page = std::make_shared<MakeDescriptorAllocatorPage>(this->device, this->d3d12_heap_type, this->num_descriptors_per_heap);
 
         this->heap_pool.emplace_back(new_page);
         this->available_heaps.insert(this->heap_pool.size() - 1);
