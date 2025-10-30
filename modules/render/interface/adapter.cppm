@@ -22,7 +22,7 @@ public:
 public:
     [[nodiscard]] static AdapterList getAdapters(DXGI_GPU_PREFERENCE gpu_preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 
-    [[nodiscard]] static std::shared_ptr<Adapter> Create(DXGI_GPU_PREFERENCE gpu_preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
+    [[nodiscard]] static std::shared_ptr<Adapter> create(DXGI_GPU_PREFERENCE gpu_preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 
     [[nodiscard]] inline Microsoft::WRL::ComPtr<IDXGIAdapter4> getDXGIAdapter() const
     {

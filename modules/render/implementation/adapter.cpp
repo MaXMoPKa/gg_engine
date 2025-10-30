@@ -45,7 +45,7 @@ Adapter::AdapterList Adapter::getAdapters(DXGI_GPU_PREFERENCE gpu_preference)
     return adapters;
 }
 
-std::shared_ptr<Adapter> Adapter::Create(DXGI_GPU_PREFERENCE gpu_preference)
+std::shared_ptr<Adapter> Adapter::create(DXGI_GPU_PREFERENCE gpu_preference)
 {
     using namespace Microsoft::WRL;
 
