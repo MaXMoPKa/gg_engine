@@ -14,6 +14,7 @@ namespace gg
 {
 
 class CommandList;
+class Resource;
 
 export class ResourceStateTracker
 {
@@ -24,6 +25,15 @@ public:
 
 public:
     void resourceBarrier(const D3D12_RESOURCE_BARRIER& barrier);
+
+    void transitionResource(ID3D12Resource* resource, D3D12_RESOURCE_STATES state_after,
+                            UINT sub_resource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
+    void transitionResource(const Resource& resource, D3D12_RESOURCE_STATES state_after,
+                            UINT sub_resource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
+
+    void uavBarrier(const Resource* resource = nullptr);
+
+    void aliasBarrier(const Resource* resource_before = nullptr, const Resource* resource_after = nullptr);
 
     [[nodiscard]] uint32_t flushPendingResourceBarriers(const std::shared_ptr<CommandList>& command_list);
 
