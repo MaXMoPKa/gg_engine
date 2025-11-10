@@ -4,8 +4,9 @@ project(gg_engine)
 
 add_subdirectory(third_party/DirectXTex)
 
-add_subdirectory(core)
-add_subdirectory(render)
+#add_subdirectory(core)
+#add_subdirectory(render)
+add_subdirectory(ecs)
 
 add_library(${PROJECT_NAME} INTERFACE)
 
