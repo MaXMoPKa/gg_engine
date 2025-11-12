@@ -10,5 +10,10 @@ namespace memory
 {
 GlobalMemoryUser::GlobalMemoryUser()
 {}
+
+void GlobalMemoryUser::free(void* memory)
+{
+    //ecs_memory_manager->free(memory);
+}
 } // namespace memory;
 } // namespace gg;

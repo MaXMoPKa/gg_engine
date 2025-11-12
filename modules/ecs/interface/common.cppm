@@ -1,6 +1,7 @@
 module;
 
 #include <cstdint>
+#include <limits>
 
 export module ecs:common;
 
@@ -25,4 +26,17 @@ namespace gg
     export using ComponentTypeId = TypeId;
 
     export const ComponentId INVALID_COMPONENT_ID = INVALID_OBJECT_ID;
+
+    export using SystemTypeId = TypeId;
+    export using SystemPriority = uint16_t;
+
+    export const SystemTypeId INVALID_SYSTEM_ID = INVALID_TYPE_ID;
+    export const SystemPriority LOWEST_SYSTEM_PRIORITY = std::numeric_limits<SystemPriority>::min();
+    export const SystemPriority VERY_LOW_SYSTEM_PRIORITY = 99u;
+    export const SystemPriority LOW_SYSTEM_PRIORITY = 100u;
+    export const SystemPriority NORMAL_SYSTEM_PRIORITY = 200u;
+    export const SystemPriority MEDIUM_SYSTEM_PRIORITY = 300u;
+    export const SystemPriority HIGH_SYSTEM_PRIORITY = 400u;
+    export const SystemPriority VERY_HIGH_SYSTEM_PRIORITY = 500u;
+    export const SystemPriority HIGHEST_SYSTEM_PRIORITY = std::numeric_limits<SystemPriority>::max();
 } // namespace gg;
