@@ -16,6 +16,7 @@ namespace gg
     export const uint32_t COMPONENT_T_CHUNK_SIZE {512};
     export const uint32_t ECS_EVENT_MEMORY_BUFFER_SIZE {4194304}; // 4MB
     export const uint32_t ECS_SYSTEM_MEMORY_BUFFER_SIZE {8388608}; // 8MB
+    export const uint32_t ECS_GLOBAL_MEMORY_CAPACITY {134217728}; // 128 MB
 
     export using EntityId = util::Handle64;
     export using EntityTypeId = TypeId;
