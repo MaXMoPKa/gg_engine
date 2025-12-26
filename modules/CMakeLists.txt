@@ -1,15 +1,53 @@
 cmake_minimum_required(VERSION 3.31.5)
 
-project(gg_engine)
+project(gg_engine LANGUAGES CXX)
 
-add_subdirectory(third_party/DirectXTex)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#add_subdirectory(core)
-#add_subdirectory(render)
-add_subdirectory(ecs)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
-add_library(${PROJECT_NAME} INTERFACE)
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE gg::core gg::render)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
-target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(MODULES_DIRS common
+                 ecs)
+
+set(MODULES_INTERFACE_FILES)
+set(MODULES_IMPL_FILES)
+foreach(module_dir IN LISTS MODULES_DIRS)
+    set(interface_dir "${CMAKE_CURRENT_SOURCE_DIR}/${module_dir}/interface")
+    set(impl_dir "${CMAKE_CURRENT_SOURCE_DIR}/${module_dir}/implementation")
+
+    file(GLOB MODULE_INTERFACE_FILES "${interface_dir}/*.cppm")
+
+    file(GLOB MODULE_IMPL_FILES "${impl_dir}/*.cpp")
+
+    list(APPEND MODULES_INTERFACE_FILES ${MODULE_INTERFACE_FILES})
+    list(APPEND MODULES_IMPL_FILES ${MODULE_IMPL_FILES})
+endforeach()
+
+add_library(${PROJECT_NAME} STATIC)
+
+target_sources(${PROJECT_NAME} PUBLIC FILE_SET interfaces TYPE CXX_MODULES FILES ${MODULES_INTERFACE_FILES})
+target_sources(${PROJECT_NAME} PRIVATE ${MODULES_IMPL_FILES})
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULES_INTERFACE_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULES_IMPL_FILES})
+
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      "${CMAKE_BINARY_DIR}/compile_commands.json"
+      "${CMAKE_SOURCE_DIR}/compile_commands.json"
+      COMMENT "[gg_engine] Create symlink for compile_commands.json")
+endif(CMAKE_EXPORT_COMPILE_COMMANDS)

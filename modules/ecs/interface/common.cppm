@@ -40,4 +40,6 @@ namespace gg
     export const SystemPriority HIGH_SYSTEM_PRIORITY = 400u;
     export const SystemPriority VERY_HIGH_SYSTEM_PRIORITY = 500u;
     export const SystemPriority HIGHEST_SYSTEM_PRIORITY = std::numeric_limits<SystemPriority>::max();
+
+  
 } // namespace gg;

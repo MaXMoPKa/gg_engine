@@ -28,6 +28,5 @@ int main()
         }
     }
 
-
     return static_cast<int>(msg.wParam);
 }
