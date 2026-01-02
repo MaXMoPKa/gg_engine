@@ -1,13 +1,15 @@
 module;
 
-export module ecs:entity;
+export module ecs.entity;
 
-import :ientity;
-import :family_type_id;
+import ecs.ientity;
+import ecs.family_type_id;
+import ecs.common;
+import ecs.component_manager;
 
 namespace gg
 {
-
+    
 export template<typename T>
 class Entity : public IEntity
 {

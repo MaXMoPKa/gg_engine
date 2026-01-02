@@ -1,11 +1,10 @@
 module;
 
-#include <cstdint>
-#include <cstddef>
+export module ecs.linear_allocator;
 
-export module ecs:linear_allocator;
+import ecs.iallocator;
 
-import :iallocator;
+import types.base_types;
 
 namespace gg
 {
@@ -17,10 +16,10 @@ namespace allocator
 export class LinearAllocator : public IAllocator
 {
 public:
-    LinearAllocator(const std::size_t memory_size, const void* memory);
+    LinearAllocator(const Size memory_size, const void* memory);
     virtual ~LinearAllocator();
 
-    virtual void* allocate(const std::size_t size, const uint8_t alignment) override;
+    virtual void* allocate(const Size size, const U8 alignment) override;
     virtual void free(void* memory) override;
     virtual void clear() override;
 };

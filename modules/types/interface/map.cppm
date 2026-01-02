@@ -2,7 +2,7 @@ module;
 
 #include <map>
 
-export module common:map;
+export module types.map;
 
 namespace gg
 {

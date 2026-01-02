@@ -1,17 +1,21 @@
 module;
 
-#include <string>
 #include <typeinfo>
+#include <utility>
 
-export module ecs:system;
+export module ecs.system;
 
-import :isystem;
-import :family_type_id;
-import :system_manager;
+import ecs.isystem;
+import ecs.family_type_id;
+import ecs.system_manager;
+import ecs.common;
+
+import types.string;
+import types.base_types;
 
 namespace gg
 {
-
+    
 export template<typename T>
 class System : public ISystem
 {
@@ -25,9 +29,9 @@ public:
         return STATIC_SYSTEM_TYPE_ID;
     }
 
-    [[nodiscard]] std::string getSystemTypeName() const override
+    [[nodiscard]] String getSystemTypeName() const override
     {
-        static std::string SYSTEM_TYPE_NAME{typeid(T).name()};
+        static String SYSTEM_TYPE_NAME{typeid(T).name()};
         return SYSTEM_TYPE_NAME;
     }
 
@@ -37,16 +41,16 @@ public:
         this->system_manager->addSystemDependency(this, std::forward<Dependencies>(dependencies)...);
     }
 
-    virtual void preUpdate(float dt) override {}
-    virtual void update(float dt) override {}
-    virtual void postUpdate(float dt) override {}
+    virtual void preUpdate(F32 dt) override {}
+    virtual void update(F32 dt) override {}
+    virtual void postUpdate(F32 dt) override {}
 
 protected:
     System() {}
 
 private:
     friend class SystemManager;
-
+        
     SystemManager* system_manager;
 };
 

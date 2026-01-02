@@ -2,7 +2,7 @@ module;
 
 #include <memory>
 
-export module common:smart_pointers;
+export module types.smart_pointers;
 
 namespace gg
 {

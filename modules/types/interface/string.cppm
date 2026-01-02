@@ -2,7 +2,7 @@ module;
 
 #include <string>
 
-export module common:string;
+export module types.string;
 
 namespace gg
 {

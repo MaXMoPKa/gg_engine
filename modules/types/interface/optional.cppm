@@ -2,7 +2,7 @@ module;
 
 #include <optional>
 
-export module common:optional;
+export module types.optional;
 
 namespace gg
 {

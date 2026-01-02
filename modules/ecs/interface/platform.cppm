@@ -1,10 +1,10 @@
 module;
 
 #include <limits>
-#include <cstddef>
-#include <cstdint>
 
-export module ecs:platform;
+export module ecs.platform;
+
+import types.base_types;
 
 namespace gg
 {
@@ -16,36 +16,36 @@ namespace gg
 
     export union TimeStamp
     {
-        float as_float;
-        uint32_t as_uint32;
+        F32 as_float;
+        U32 as_u32;
 
         TimeStamp()
-            : as_uint32{0u}
+            : as_u32{0u}
         {}
 
         explicit TimeStamp(float value)
             : as_float{value}
         {}
 
-        operator uint32_t() const
+        operator U32() const
         {
-            return this->as_uint32;
+            return this->as_u32;
         }
 
-        inline const bool operator==(const TimeStamp& other) const
+        inline const Bool operator==(const TimeStamp& other) const
         {
-             return this->as_uint32 == other.as_uint32;
+             return this->as_u32 == other.as_u32;
         }
-        inline const bool operator!=(const TimeStamp& other) const
+        inline const Bool operator!=(const TimeStamp& other) const
         {
-            return this->as_uint32 != other.as_uint32;
+            return this->as_u32 != other.as_u32;
         }
 
-        inline const bool operator<(const TimeStamp& other) const
+        inline const Bool operator<(const TimeStamp& other) const
         {
             return this->as_float < other.as_float;
         }
-        inline const bool operator>(const TimeStamp& other) const
+        inline const Bool operator>(const TimeStamp& other) const
         {
             return this->as_float > other.as_float;
         }

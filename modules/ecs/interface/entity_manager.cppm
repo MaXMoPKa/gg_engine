@@ -1,13 +1,20 @@
 module;
 
-#include <string>
 #include <typeinfo>
-#include <unordered_map>
+#include <utility>
 
-export module ecs:entity_manager;
+export module ecs.entity_manager;
 
-import :ientity;
-import :handle;
+import ecs.ientity;
+import ecs.handle;
+import ecs.memory_chunk_allocator;
+import ecs.common;
+import ecs.component_manager;
+
+import types.string;
+import types.unordered_map;
+import types.vector;
+import types.base_types;
 
 namespace gg
 {
@@ -19,7 +26,7 @@ private:
     {
     public:
         virtual ~IEntityContainer() = default;
-        [[nodiscard]] virtual std::string getEntityContainerTypeName() const = 0;
+        [[nodiscard]] virtual String getEntityContainerTypeName() const = 0;
         virtual void destroyEntity(IEntity* object) = 0;
     };
 
@@ -32,9 +39,9 @@ private:
         {}
         virtual ~EntityContainer() = default;
 
-        [[nodiscard]] virtual std::string getEntityContainerTypeName() const override
+        [[nodiscard]] virtual String getEntityContainerTypeName() const override
         {
-            static std::string ENTITY_TYPE_NAME{typeid(T).name()};
+            static String ENTITY_TYPE_NAME{typeid(T).name()};
             return ENTITY_TYPE_NAME;
         }
 
@@ -98,13 +105,13 @@ public:
     void releaseEntityId(EntityId entity_id);
 
 private:
-    using EntityRegistry = std::unordered_map<EntityTypeId, IEntityContainer*>;
-    using PendingDestroyEntities = std::vector<EntityId>;
+    using EntityRegistry = UnorderedMap<EntityTypeId, IEntityContainer*>;
+    using PendingDestroyEntities = Vector<EntityId>;
     using EntityHandleTable = util::HandleTable<IEntity, EntityId>;
 
     EntityRegistry entity_registry;
     PendingDestroyEntities pending_destroy_entities;
-    std::size_t num_pending_destroyed_entities;
+    Size num_pending_destroyed_entities;
     ComponentManager* component_manager;
     EntityHandleTable entity_handle_table;
 

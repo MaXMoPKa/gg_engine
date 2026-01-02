@@ -1,15 +1,16 @@
 module;
 
-#include <string>
+export module ecs.global_memory_user;
 
-export module ecs:global_memory_user;
+import ecs.memory_manager;
+
+import types.base_types;
+import types.string;
 
 namespace gg
 {
 namespace memory
 {
-
-class MemoryManager;
 
 export class GlobalMemoryUser
 {
@@ -17,9 +18,10 @@ public:
     GlobalMemoryUser();
     virtual ~GlobalMemoryUser() = default;
 
-    const void* allocate(std::size_t mem_size, const std::string& user = std::string());
+    const void* allocate(Size mem_size, const String& user = String());
      void free(void* mem);
 private:
+    MemoryManager* memory_manager;
 };
 
 } // namespace memory;

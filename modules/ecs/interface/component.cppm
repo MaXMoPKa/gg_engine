@@ -1,9 +1,10 @@
 module;
 
-export module ecs:component;
+export module ecs.component;
 
-import :icomponent;
-import :family_type_id;
+import ecs.icomponent;
+import ecs.family_type_id;
+import ecs.common;
 
 namespace gg
 {

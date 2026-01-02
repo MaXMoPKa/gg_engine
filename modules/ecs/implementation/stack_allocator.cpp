@@ -1,12 +1,8 @@
 module;
 
 #include <cassert>
-#include <cstdint>
-#include <cstddef>
 
-module ecs;
-
-import :stack_allocator;
+module ecs.stack_allocator;
 
 namespace gg
 {
@@ -15,7 +11,7 @@ namespace memory
 namespace allocator
 {
 
-StackAllocator::StackAllocator(const std::size_t memory_size, const void* memory)
+StackAllocator::StackAllocator(const Size memory_size, const void* memory)
     : IAllocator(memory_size, memory)
 {}
 
@@ -24,14 +20,14 @@ StackAllocator::~StackAllocator()
     this->clear();
 }
 
-void* StackAllocator::allocate(const std::size_t size, const uint8_t alignment)
+void* StackAllocator::allocate(const Size size, const U8 alignment)
 {
     assert(size > 0 && "allocate called with memory_size == 0.");
 
     union
     {
         void* as_void_pointer;
-        uintptr_t as_uintptr;
+        UIntPtr as_uintptr;
         AllocatorMetaInfo* as_meta_info;
     };
 
@@ -39,7 +35,7 @@ void* StackAllocator::allocate(const std::size_t size, const uint8_t alignment)
 
     as_uintptr += this->memory_used;
 
-    uint8_t adjustment = getAdjustment(as_void_pointer, alignment, sizeof(AllocatorMetaInfo));
+    U8 adjustment = getAdjustment(as_void_pointer, alignment, sizeof(AllocatorMetaInfo));
 
     if(this->memory_used + size + adjustment > this->memory_size)
     {
@@ -61,14 +57,14 @@ void StackAllocator::free(void* memory)
     union
     {
         void* as_void_pointer;
-        uintptr_t as_uintptr;
+        UIntPtr as_uintptr;
         AllocatorMetaInfo* as_meta_info;
     };
 
     as_void_pointer = memory;
     as_uintptr -= sizeof(AllocatorMetaInfo);
 
-    this->memory_used -= ((uintptr_t)this->memory_address + this->memory_used) - ((uintptr_t)memory + as_meta_info->adjusment);
+    this->memory_used -= ((UIntPtr)this->memory_address + this->memory_used) - ((UIntPtr)memory + as_meta_info->adjusment);
     this->memory_allocations_count--;
 }
 

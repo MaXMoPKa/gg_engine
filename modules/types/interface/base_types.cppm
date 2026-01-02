@@ -3,7 +3,7 @@ module;
 #include <cstdint>
 #include <uchar.h>
 
-export module common:base_types;
+export module types.base_types;
 
 namespace gg
 {

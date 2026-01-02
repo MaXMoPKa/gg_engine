@@ -1,13 +1,9 @@
 module;
 
-#include <cstddef>
-#include <cstdint>
 #include <cassert>
 #include <cmath>
 
-module ecs;
-
-import :pool_allocator;
+module ecs.pool_allocator;
 
 namespace gg
 {
@@ -15,10 +11,10 @@ namespace memory
 {
 namespace allocator
 {
-PoolAllocator::PoolAllocator(const std::size_t memory_size,
-                             const void*       memory,
-                             const std::size_t object_size,
-                             const uint8_t     object_alignment)
+PoolAllocator::PoolAllocator(const Size  memory_size,
+                             const void* memory,
+                             const Size  object_size,
+                             const U8    object_alignment)
     : IAllocator(memory_size, memory)
     , object_size(object_size)
     , object_alignment(object_alignment)
@@ -31,7 +27,7 @@ PoolAllocator::~PoolAllocator()
     this->free_list = nullptr;
 }
 
-void* PoolAllocator::allocate(const std::size_t size, const uint8_t alignment)
+void* PoolAllocator::allocate(const Size size, const U8 alignment)
 {
     assert(size > 0 && "allocate called with memorySize = 0.");
     assert(size == this->object_size && alignment == this->object_alignment);
@@ -62,13 +58,13 @@ void PoolAllocator::free(void* memory)
 
 void PoolAllocator::clear()
 {
-    uint8_t adjustment    = getAdjustment(this->memory_address, this->object_alignment);
-    std::size_t number_objects = (std::size_t)std::floor((this->memory_size - adjustment) / this->object_size);
+    U8 adjustment = getAdjustment(this->memory_address, this->object_alignment);
+    Size number_objects = (Size)std::floor((this->memory_size - adjustment) / this->object_size);
 
     union
     {
         void* as_void_pointer;
-        uintptr_t as_uintptr;
+        UIntPtr as_uintptr;
     };
 
     as_void_pointer = (void*)this->memory_address;
@@ -79,9 +75,9 @@ void PoolAllocator::clear()
 
     void** pointer = this->free_list;
 
-    for (int i = 0; i < (number_objects - 1); ++i)
+    for (U32 i = 0; i < (number_objects - 1); ++i)
     {
-        *pointer = (void*)((uintptr_t)pointer + this->object_size);
+        *pointer = (void*)((UIntPtr)pointer + this->object_size);
         pointer  = (void**)*pointer;
     }
 

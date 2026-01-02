@@ -1,11 +1,11 @@
 module;
 
-#include <list>
+#include <deque>
 
-export module common:list;
+export module types.deque;
 
 namespace gg
 {
     export template<typename T>
-    using List = std::list<T>;
+    using Deque = std::deque<T>;
 } // namespace gg;

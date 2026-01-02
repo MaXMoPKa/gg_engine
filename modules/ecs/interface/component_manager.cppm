@@ -1,16 +1,18 @@
 module;
 
-#include <string>
-#include <vector>
-#include <unordered_map>
 #include <typeinfo>
 
-export module ecs:component_manager;
+export module ecs.component_manager;
 
-import :common;
-import :icomponent;
-import :global_memory_user;
-import :memory_chunk_allocator;
+import ecs.common;
+import ecs.icomponent;
+import ecs.global_memory_user;
+import ecs.memory_chunk_allocator;
+
+import types.string;
+import types.vector;
+import types.unordered_map;
+import types.base_types;
 
 namespace gg
 {
@@ -24,7 +26,7 @@ private:
     {
     public:
         virtual ~IComponentContainer() = default;
-        virtual std::string getComponentContainerTypeName() const = 0;
+        virtual String getComponentContainerTypeName() const = 0;
         virtual void destroyComponent(IComponent* object) = 0;
     };
 
@@ -37,9 +39,9 @@ private:
         {}
         virtual ~ComponentContainer() = default;
 
-        virtual std::string getComponentContainerTypeName() const override
+        virtual String getComponentContainerTypeName() const override
         {
-            static std::string COMPONENT_TYPE_NAME{typeid(T).name()};
+            static String COMPONENT_TYPE_NAME{typeid(T).name()};
             return COMPONENT_TYPE_NAME;
         }
 
@@ -72,8 +74,8 @@ public:
         ((T*)object_memory)->component_id = component_id;
 
         IComponent* component = new (object_memory) T(std::forward<ARGS>(args)...);
-        component->owner = entity_id;
-        component->hash_value = entity_component_id_hasher(entity_id) ^ (entity_component_id_hasher(component_id) << 1);
+        component->setOwner(entity_id);
+        component->setHash(entity_component_id_hasher(entity_id) ^ (entity_component_id_hasher(component_id) << 1));
 
         mapEntityComponent(entity_id, component_id, component_type_id);
 
@@ -151,7 +153,7 @@ private:
 
     ComponentId aqcuireComponentId(IComponent* component)
     {
-        int i = 0;
+        U32 i = 0;
         for (; i < this->component_lookup_table.size(); ++i)
         {
             if (this->component_lookup_table[i] == nullptr)
@@ -175,13 +177,13 @@ private:
 
 
 private:
-    using ComponentContainerRegistry = std::unordered_map<ComponentTypeId, IComponentContainer*>;
+    using ComponentContainerRegistry = UnorderedMap<ComponentTypeId, IComponentContainer*>;
     ComponentContainerRegistry component_container_registry;
 
-    using ComponentLookupTable = std::vector<IComponent*>;
+    using ComponentLookupTable = Vector<IComponent*>;
     ComponentLookupTable component_lookup_table;
 
-    using EntityComponentMap = std::vector<std::vector<ComponentId>>;
+    using EntityComponentMap = Vector<Vector<ComponentId>>;
     EntityComponentMap entity_component_map;
 };
 

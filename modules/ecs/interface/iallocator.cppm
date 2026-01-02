@@ -1,9 +1,8 @@
 module;
 
-#include <cstdint>
-#include <cstddef>
+export module ecs.iallocator;
 
-export module ecs:iallocator;
+import types.base_types;
 
 namespace gg
 {
@@ -11,19 +10,19 @@ namespace memory
 {
 namespace allocator
 {
-export inline void* alignForward(void* address, uint8_t alignment)
+export inline void* alignForward(void* address, U8 alignment)
 {
-    return (void*)((reinterpret_cast<uintptr_t>(address) + static_cast<uintptr_t>(alignment - 1)) && static_cast<uintptr_t>(~(alignment - 1)));
+    return (void*)((reinterpret_cast<UIntPtr>(address) + static_cast<UIntPtr>(alignment - 1)) && static_cast<UIntPtr>(~(alignment - 1)));
 }
-export inline uint8_t getAdjustment(const void* address, uint8_t alignment)
+export inline U8 getAdjustment(const void* address, U8 alignment)
 {
-    uint8_t adjustment = alignment - (reinterpret_cast<uintptr_t>(address) & static_cast<uintptr_t>(alignment - 1));
+    U8 adjustment = alignment - (reinterpret_cast<UIntPtr>(address) & static_cast<UIntPtr>(alignment - 1));
     return adjustment == alignment ? 0 : adjustment;
 }
-export inline uint8_t getAdjustment(const void* address, uint8_t alignment, uint8_t extra)
+export inline U8 getAdjustment(const void* address, U8 alignment, U8 extra)
 {
-    uint8_t adjustment  = getAdjustment(address, alignment);
-    uint8_t needed_space = extra;
+    U8 adjustment  = getAdjustment(address, alignment);
+    U8 needed_space = extra;
 
     if (adjustment < needed_space)
     {
@@ -42,14 +41,14 @@ export inline uint8_t getAdjustment(const void* address, uint8_t alignment, uint
 export class IAllocator
 {
 public:
-    IAllocator(const std::size_t memory_size, const void* memory);
+    IAllocator(const Size memory_size, const void* memory);
     virtual ~IAllocator() = default;
 
-    virtual void* allocate(const std::size_t size, const uint8_t alignment) = 0;
-    virtual void  free(void* memory)                                   = 0;
-    virtual void  clear()                                              = 0;
+    virtual void* allocate(const Size size, const U8 alignment) = 0;
+    virtual void  free(void* memory)                            = 0;
+    virtual void  clear()                                       = 0;
 
-    inline void       setMemorySize(const std::size_t) = delete;
+    inline void       setMemorySize(const Size) = delete;
     inline const auto getMemorySize() const { return this->memory_size; }
     inline auto       getMemorySize() { return this->memory_size; }
 
@@ -57,18 +56,18 @@ public:
     inline const auto getMemoryAddress() const { return this->memory_address; }
     inline auto       getMemoryAddress() { return this->memory_address; }
 
-    inline void       setUsedMemory(const std::size_t) = delete;
+    inline void       setUsedMemory(const Size) = delete;
     inline const auto getUsedMemory() const { return this->memory_used; }
     inline auto       getUsedMemory() { return this->memory_used; }
 
-    inline void       setAllocationsCount(const uint64_t) = delete;
+    inline void       setAllocationsCount(const U64) = delete;
     inline const auto getAllocationsCount() const { return this->memory_allocations_count; }
     inline auto       getAllocationsCount() { return this->memory_allocations_count; }
 protected:
-    const std::size_t memory_size;
-    const void*       memory_address;
-    std::size_t       memory_used;
-    uint64_t          memory_allocations_count;
+    const Size  memory_size;
+    const void* memory_address;
+    Size        memory_used;
+    U8          memory_allocations_count;
 };
 } // namespace allocator;
 } // namespace memory;

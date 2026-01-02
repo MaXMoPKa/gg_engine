@@ -2,7 +2,7 @@ module;
 
 #include <functional>
 
-export module common:function;
+export module types.function;
 
 namespace gg
 {

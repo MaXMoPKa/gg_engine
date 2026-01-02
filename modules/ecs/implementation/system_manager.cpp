@@ -1,9 +1,8 @@
 module;
 
-module ecs;
+module ecs.system_manager;
 
-import :system_manager;
-import :isystem;
+import ecs.isystem;
 
 namespace gg
 {

@@ -1,8 +1,8 @@
 module;
 
-export module ecs:family_type_id;
+export module ecs.family_type_id;
 
-import :platform;
+import ecs.platform;
 
 namespace gg
 {

@@ -1,18 +1,15 @@
 module;
 
-#include <cstddef>
+module ecs.component_manager;
 
-module ecs;
-
-import :component_manager;
-import :family_type_id;
+import ecs.family_type_id;
 
 namespace gg
 {
 
 ComponentManager::ComponentManager()
 {
-    const std::size_t num_components{ util::FamilyTypeId<IComponent>::get() };
+    const Size num_components{ util::FamilyTypeId<IComponent>::get() };
 
     this->entity_component_map.resize(ENITY_LUT_GROW);
     for (auto i = 0; i < ENITY_LUT_GROW; ++i)

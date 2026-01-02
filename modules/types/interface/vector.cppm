@@ -2,7 +2,7 @@ module;
 
 #include <vector>
 
-export module common:vector;
+export module types.vector;
 
 namespace gg
 {

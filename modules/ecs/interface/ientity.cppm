@@ -2,15 +2,17 @@ module;
 
 #include <utility>
 
-export module ecs:ientity;
+export module ecs.ientity;
 
-import :common;
-import :component_manager;
+import ecs.common;
+import ecs.component_manager;
+
+import types.base_types;
 
 namespace gg
 {
 
-class IEntity
+export class IEntity
 {
 public:
     IEntity();
@@ -38,19 +40,19 @@ public:
     virtual void onEnable(){}
     virtual void OnDisable(){}
 
-    [[nodiscard]] inline bool operator==(const IEntity& rhs) const
+    [[nodiscard]] inline Bool operator==(const IEntity& rhs) const
     {
         return this->entity_id == rhs.entity_id;
     }
-    [[nodiscard]] inline bool operator!=(const IEntity& rhs) const
+    [[nodiscard]] inline Bool operator!=(const IEntity& rhs) const
     {
         return this->entity_id != rhs.entity_id;
     }
-    [[nodiscard]] inline bool operator==(const IEntity* rhs) const
+    [[nodiscard]] inline Bool operator==(const IEntity* rhs) const
     {
         return this->entity_id == rhs->entity_id;
     }
-    [[nodiscard]] inline bool operator!=(const IEntity* rhs) const
+    [[nodiscard]] inline Bool operator!=(const IEntity* rhs) const
     {
         return this->entity_id != rhs->entity_id;
     }
@@ -62,19 +64,16 @@ public:
         return this->entity_id;
     }
 
-    void setActive(bool active);
+    void setActive(Bool active);
 
-    inline bool isActive() const
+    inline Bool isActive() const
     {
         return this->entity_id;
     }
 
 protected:
     EntityId entity_id;
-    bool is_active;
-private:
-    friend class EntityManager;
-
+    Bool is_active;
     ComponentManager* component_manager_instance;
 };
 

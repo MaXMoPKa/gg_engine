@@ -2,9 +2,9 @@ module;
 
 #include <array>
 
-export module common:array;
+export module types.array;
 
-import :base_types;
+import types.base_types;
 
 namespace gg
 {

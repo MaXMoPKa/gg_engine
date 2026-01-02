@@ -1,15 +1,17 @@
 module;
 
-#include <string>
-#include <cstddef>
-#include <vector>
-#include <list>
 #include <utility>
 
-export module ecs:memory_manager;
+export module ecs.memory_manager;
 
-import :stack_allocator;
-import :common;
+import ecs.stack_allocator;
+import ecs.common;
+
+import types.base_types;
+import types.string;
+import types.vector;
+import types.list;
+import types.pair;
 
 namespace gg
 {
@@ -23,11 +25,11 @@ public:
     MemoryManager();
     ~MemoryManager();
 
-    void* allocate(std::size_t memory_size, const std::string& user = "");
+    void* allocate(Size memory_size, const String& user = "");
     void free(void* pointer_memory);
     void check_memory_leaks();
 public:
-    static constexpr std::size_t MEMORY_CAPACITY = ECS_GLOBAL_MEMORY_CAPACITY;
+    static constexpr Size MEMORY_CAPACITY = ECS_GLOBAL_MEMORY_CAPACITY;
 
 private:
     MemoryManager(const MemoryManager&) = delete;
@@ -36,8 +38,8 @@ private:
 private:
     void* global_memory;
     StackAllocator* memory_allocator;
-    std::vector<std::pair<const std::string, void*>> pending_memory;
-    std::list<void*> freed_memory;
+    Vector<Pair<const String, void*>> pending_memory;
+    List<void*> freed_memory;
 };
 
 } // namespace memory;

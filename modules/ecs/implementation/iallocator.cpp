@@ -1,10 +1,6 @@
 module;
 
-#include <cstddef>
-
-module ecs;
-
-import :iallocator;
+module ecs.iallocator;
 
 namespace gg
 {
@@ -12,7 +8,7 @@ namespace memory
 {
 namespace allocator
 {
-IAllocator::IAllocator(const std::size_t memory_size, const void* memory)
+IAllocator::IAllocator(const Size memory_size, const void* memory)
     : memory_size{memory_size}
     , memory_address{memory}
     , memory_used{0}

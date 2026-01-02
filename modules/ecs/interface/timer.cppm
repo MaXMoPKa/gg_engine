@@ -3,9 +3,11 @@ module;
 #include <chrono>
 #include <ratio>
 
-export module ecs:timer;
+export module ecs.timer;
 
-import :platform;
+import ecs.platform;
+
+import types.base_types;
 
 namespace gg
 {
@@ -13,12 +15,12 @@ namespace util
 {
 export class Timer
 {
-    using Elapsed = std::chrono::duration<float, std::milli>;
+    using Elapsed = std::chrono::duration<F32, std::milli>;
 public:
     Timer() = default;
     ~Timer() = default;
 
-    void tick(float ms) {};
+    void tick(F32 ms) {};
     void reset() {};
     [[nodiscard]] inline TimeStamp getTimeStamp() const
     {

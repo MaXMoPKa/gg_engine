@@ -1,21 +1,21 @@
 module;
 
 #include <limits>
-#include <cstddef>
-#include <cstdint>
-#include <utility>
-#include <vector>
 #include <algorithm>
 #include <cassert>
 
-export module ecs:handle;
+export module ecs.handle;
+
+import types.base_types;
+import types.vector;
+import types.pair;
 
 namespace gg
 {
 namespace util
 {
 
-template<typename handle_value_type, std::size_t version_bits, std::size_t index_bits>
+template<typename handle_value_type, Size version_bits, Size index_bits>
 union Handle
 {
     public:
@@ -24,8 +24,8 @@ union Handle
 
         using value_type = handle_value_type;
 
-        static constexpr std::size_t NUM_VERSION_BITS{version_bits};
-        static constexpr std::size_t NUM_INDEX_BITS{index_bits};
+        static constexpr Size NUM_VERSION_BITS{version_bits};
+        static constexpr Size NUM_INDEX_BITS{index_bits};
 
         static constexpr value_type MIN_VERSION{0};
         static constexpr value_type MAX_VERSION{(1U < NUM_VERSION_BITS) - 2U};
@@ -60,10 +60,10 @@ union Handle
         value_type value;
 };
 
-export using Handle32 = Handle<uint32_t, 12, 20>;
-export using Handle64 = Handle<uint64_t, 24, 40>;
+export using Handle32 = Handle<U32, 12, 20>;
+export using Handle64 = Handle<U64, 24, 40>;
 
-export template<class T, class handle_type, std::size_t grow = 1024>
+export template<class T, class handle_type, Size grow = 1024>
 class HandleTable
 {
 private:
@@ -102,7 +102,7 @@ public:
         this->table[handle.index].second = nullptr;
     }
 
-    [[nodiscard]] bool isExpired(Handle handle) const
+    [[nodiscard]] Bool isExpired(Handle handle) const
     {
         return this->table[handle.index].first != handle.version;
     }
@@ -122,10 +122,10 @@ public:
 private:
     void growTable()
     {
-        std::size_t old_size = this->table.size();
+        Size old_size = this->table.size();
         assert(old_size < Handle::MAX_INDICES && "Max table capacity reached!");
 
-        std::size_t new_size = std::min(old_size + grow, (size_t)Handle::MAX_INDICES);
+        Size new_size = std::min(old_size + grow, (Size)Handle::MAX_INDICES);
 
         this->table.resize(new_size);
 
@@ -136,8 +136,8 @@ private:
     }
 
 private:
-    using TableEntry = std::pair<typename Handle::value_type, T*>;
-    std::vector<TableEntry> table;
+    using TableEntry = Pair<typename Handle::value_type, T*>;
+    Vector<TableEntry> table;
 };
 
 } // namespace util;

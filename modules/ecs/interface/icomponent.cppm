@@ -1,12 +1,14 @@
 module;
 
-export module ecs:icomponent;
+export module ecs.icomponent;
 
-import :common;
+import ecs.common;
+
+import types.base_types;
 
 namespace gg
 {
-
+    
 export class IComponent
 {
 public:
@@ -16,15 +18,24 @@ public:
     {}
     virtual ~IComponent() = default;
 
-    [[nodiscard]] inline const bool operator==(const IComponent& other) const
+    [[nodiscard]] inline const Bool operator==(const IComponent& other) const
     {
         return this->hash_value == other.hash_value;
     }
-    [[nodiscard]] inline const bool operator!=(const IComponent& other) const
+    [[nodiscard]] inline const Bool operator!=(const IComponent& other) const
     {
         return this->hash_value != other.hash_value;
     }
 
+    [[nodiscard]] inline const ComponentId getHash() const
+    {
+        return this->hash_value;
+    }
+    void inline setHash(ComponentId new_hash_value)
+    {
+        this->hash_value = new_hash_value;
+    }
+        
     [[nodiscard]] inline const ComponentId getComponentId() const
     {
         return this->component_id;
@@ -34,13 +45,17 @@ public:
     {
         return this->owner;
     }
-
-    inline void setIsActive(bool state)
+    void setOwner(EntityId new_owner)
+    {
+        this->owner = new_owner;
+    }
+        
+    inline void setIsActive(Bool state)
     {
         this->enabled = state;
     }
 
-    [[nodiscard]] inline bool getIsActive() const
+    [[nodiscard]] inline Bool getIsActive() const
     {
         return this->enabled;
     }
@@ -49,10 +64,7 @@ protected:
     ComponentId hash_value;
     ComponentId component_id;
     EntityId owner;
-    bool enabled;
-
-private:
-    friend class ComponentManager;
+    Bool enabled;
 };
 
 } // namespace gg;

@@ -2,7 +2,7 @@ module;
 
 #include <set>
 
-export module common:set;
+export module types.set;
 
 namespace gg
 {

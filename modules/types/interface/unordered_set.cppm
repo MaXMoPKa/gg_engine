@@ -2,7 +2,7 @@ module;
 
 #include <unordered_set>
 
-export module common:unordered_set;
+export module types.unordered_set;
 
 namespace gg
 {

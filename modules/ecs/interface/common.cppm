@@ -3,20 +3,22 @@ module;
 #include <cstdint>
 #include <limits>
 
-export module ecs:common;
+export module ecs.common;
 
-import :platform;
-import :handle;
+import ecs.platform;
+import ecs.handle;
+
+import types.base_types;
 
 namespace gg
 {
-    export const uint32_t ENITY_LUT_GROW {1024};
-    export const uint32_t ENTITY_T_CHUNK_SIZE {512};
-    export const uint32_t COMPONENT_LUT_GROW {1024};
-    export const uint32_t COMPONENT_T_CHUNK_SIZE {512};
-    export const uint32_t ECS_EVENT_MEMORY_BUFFER_SIZE {4194304}; // 4MB
-    export const uint32_t ECS_SYSTEM_MEMORY_BUFFER_SIZE {8388608}; // 8MB
-    export const uint32_t ECS_GLOBAL_MEMORY_CAPACITY {134217728}; // 128 MB
+    export const U32 ENITY_LUT_GROW {1024};
+    export const U32 ENTITY_T_CHUNK_SIZE {512};
+    export const U32 COMPONENT_LUT_GROW {1024};
+    export const U32 COMPONENT_T_CHUNK_SIZE {512};
+    export const U32 ECS_EVENT_MEMORY_BUFFER_SIZE {4194304}; // 4MB
+    export const U32 ECS_SYSTEM_MEMORY_BUFFER_SIZE {8388608}; // 8MB
+    export const U32 ECS_GLOBAL_MEMORY_CAPACITY {134217728}; // 128 MB
 
     export using EntityId = util::Handle64;
     export using EntityTypeId = TypeId;
@@ -29,7 +31,7 @@ namespace gg
     export const ComponentId INVALID_COMPONENT_ID = INVALID_OBJECT_ID;
 
     export using SystemTypeId = TypeId;
-    export using SystemPriority = uint16_t;
+    export using SystemPriority = U16;
 
     export const SystemTypeId INVALID_SYSTEM_ID = INVALID_TYPE_ID;
     export const SystemPriority LOWEST_SYSTEM_PRIORITY = std::numeric_limits<SystemPriority>::min();

@@ -1,14 +1,16 @@
 module;
 
-#include <cstdint>
 #include <cstddef>
-#include <string>
-#include <list>
+#include <iterator>
 
-export module ecs:memory_chunk_allocator;
+export module ecs.memory_chunk_allocator;
 
-import :global_memory_user;
-import :pool_allocator;
+import ecs.global_memory_user;
+import ecs.pool_allocator;
+
+import types.list;
+import types.string;
+import types.base_types;
 
 namespace gg
 {
@@ -19,12 +21,12 @@ export template <class T, std::size_t MAX_CHUNK_OBJECTS>
 class MemoryChunkAllocator : protected GlobalMemoryUser
 {
 private:
-    static const std::size_t MAX_OBJECTS = MAX_CHUNK_OBJECTS;
-    static const std::size_t ALLOCATE_SIZE = (sizeof(T) + alignof(T)) * MAX_OBJECTS;
-    std::string allocator_tag;
+    static const Size MAX_OBJECTS = MAX_CHUNK_OBJECTS;
+    static const Size ALLOCATE_SIZE = (sizeof(T) + alignof(T)) * MAX_OBJECTS;
+    String allocator_tag;
 public:
     using Allocator = allocator::PoolAllocator;
-    using ObjectList = std::list<T*>;
+    using ObjectList = List<T*>;
 
     class MemoryChunk
     {
@@ -32,19 +34,19 @@ public:
         Allocator* allocator;
         ObjectList objects;
 
-        uintptr_t chunk_start;
-        uintptr_t chunk_end;
+        UIntPtr chunk_start;
+        UIntPtr chunk_end;
 
         MemoryChunk(Allocator* allocator)
             : allocator(allocator)
         {
-            this->chunk_start = reinterpret_cast<uintptr_t>(allocator->getMemoryAddress());
+            this->chunk_start = reinterpret_cast<UIntPtr>(allocator->getMemoryAddress());
             this->chunk_end = this->chunk_start + ALLOCATE_SIZE;
             this->objects.clear();
         }
     };
 
-    using MemoryChunks = std::list<MemoryChunk*>;
+    using MemoryChunks = List<MemoryChunk*>;
 
     class iterator : public std::iterator<std::forward_iterator_tag, T>
     {
@@ -103,7 +105,7 @@ public:
         MemoryChunks chunks;
 
     public:
-        MemoryChunkAllocator(const std::string& allocator_tag = std::string())
+        MemoryChunkAllocator(const String& allocator_tag = String())
             : allocator_tag(allocator_tag)
         {
             Allocator* allocator = new Allocator(ALLOCATE_SIZE, Allocate(ALLOCATE_SIZE, allocator_tag), sizeof(T), alignof(T));
@@ -168,7 +170,7 @@ public:
 
         void destroyObject(void* object)
         {
-            uintptr_t adr = reinterpret_cast<uintptr_t>(object);
+            UIntPtr adr = reinterpret_cast<UIntPtr>(object);
 
             for (auto chunk : this->chunks)
             {

@@ -2,7 +2,7 @@ module;
 
 #include <unordered_map>
 
-export module common:unordered_map;
+export module types.unordered_map;
 
 namespace gg
 {

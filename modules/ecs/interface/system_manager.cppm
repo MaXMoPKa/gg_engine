@@ -1,18 +1,23 @@
 module;
 
-#include <unordered_map>
+#include <utility>
 
-export module ecs:system_manager;
+export module ecs.system_manager;
 
-import :global_memory_user;
-import :common;
-import :isystem;
-import :linear_allocator;
+import ecs.global_memory_user;
+import ecs.common;
+import ecs.isystem;
+import ecs.linear_allocator;
+
+import types.unordered_map;
+import types.base_types;
+import types.vector;
+import types.list;
 
 namespace gg
 {
-
-class SystemManager : private memory::GlobalMemoryUser
+    
+export class SystemManager : private memory::GlobalMemoryUser
 {
 public:
     SystemManager();
@@ -21,7 +26,7 @@ public:
     template <typename T, class... ARGS>
     [[nodiscard]] T* addSystem(ARGS&&... system_args)
     {
-        const uint64_t static_system_type_id = T::STATIC_SYSTEM_TYPE_ID;
+        const U64 static_system_type_id = T::STATIC_SYSTEM_TYPE_ID;
 
         auto it = this->system_registry.find(static_system_type_id);
         if ((this->system_registry.find(static_system_type_id) != this->system_registry.end()) && (it->second != nullptr))
@@ -61,8 +66,8 @@ public:
     template <typename System, class Dependency>
     void addSystemDependency(System target, Dependency dependency)
     {
-        const uint64_t target_id = target->getStaticSystemTypeID();
-        const uint64_t depend_id = dependency->getStaticSystemTypeID();
+        const U64 target_id = target->getStaticSystemTypeID();
+        const U64 depend_id = dependency->getStaticSystemTypeID();
 
         if (this->system_dependency_matrix[target_id][depend_id] != true)
         {
@@ -76,8 +81,8 @@ public:
     template <typename Target, class Dependency, class... Dependencies>
     void addSystemDependency(Target target, Dependency dependency, Dependencies&&... dependencies)
     {
-        const uint64_t target_id = target->getStaticSystemTypeID();
-        const uint64_t depend_id = dependency->getStaticSystemTypeID();
+        const U64 target_id = target->getStaticSystemTypeID();
+        const U64 depend_id = dependency->getStaticSystemTypeID();
 
         if (this->system_dependency_matrix[target_id][depend_id] != true)
         {
@@ -105,12 +110,12 @@ public:
         auto it = this->system_registry.find(system_type_id);
         if (it != this->system_registry.end())
         {
-            if (it->second->is_enabled == true)
+            if (it->second->isEnabled())
             {
                 return;
             }
 
-            it->second->is_enabled = true;
+            it->second->enable();
         }
         else
         {
@@ -126,12 +131,12 @@ public:
         auto it = this->system_registry.find(system_type_id);
         if (it != this->system_registry.end())
         {
-            if (it->second->is_enabled == false)
+            if (!it->second->isEnabled())
             {
                 return;
             }
 
-            it->second->is_enabled = false;
+            it->second->disable();
         }
         else
         {
@@ -147,7 +152,7 @@ public:
         auto it = this->system_registry.find(system_type_id);
         if (it != this->system_registry.end())
         {
-            it->second->update_interval = update_interval_ms;
+            it->second->setUpdateInterval(update_interval_ms);
         }
         else
         {
@@ -163,14 +168,14 @@ public:
         auto it = this->system_registry.find(system_type_id );
         if (it != this->system_registry.end())
         {
-            SystemPriority old_priority = it->second->system_priority;
+            SystemPriority old_priority = it->second->getPriority();
 
             if (old_priority == new_priority)
             {
                 return;
             }
 
-            it->second->system_priority = new_priority;
+            it->second->setPriority(new_priority);
 
             // re-build system work order
             // this->UpdateSystemWorkOrder();
@@ -182,7 +187,7 @@ public:
     }
 
 
-    using SystemWorkStateMask = std::vector<bool>;
+    using SystemWorkStateMask = Vector<bool>;
 
     [[nodiscard]] SystemWorkStateMask getSystemWorkState() const;
 
@@ -192,10 +197,10 @@ public:
     SystemWorkStateMask generateActiveSystemWorkState(ActiveSystems&&... active_systems)
     {
         SystemWorkStateMask mask(this->system_work_order.size(), false);
-        std::list<ISystem*> active_systems_list = { active_systems... };
+        List<ISystem*> active_systems_list = { active_systems... };
         for (auto system : active_systems_list)
         {
-            for (int i = 0; i < this->system_work_order.size(); ++i)
+            for (U32 i = 0; i < this->system_work_order.size(); ++i)
             {
                 if (this->system_work_order[i]->getStaticSystemTypeId() == system->getStaticSystemTypeId())
                 {
@@ -208,10 +213,10 @@ public:
     }
 
 private:
-    using SystemDependencyMatrix = std::vector<std::vector<bool>>;
-    using SystemRegistry = std::unordered_map<uint64_t, ISystem*>;
+    using SystemDependencyMatrix = Vector<Vector<bool>>;
+    using SystemRegistry = UnorderedMap<U64, ISystem*>;
     using SystemAllocator = memory::allocator::LinearAllocator;
-    using SystemWorkOrder = std::vector<ISystem*>;
+    using SystemWorkOrder = Vector<ISystem*>;
 
     SystemAllocator* system_allocator;
     SystemRegistry system_registry;

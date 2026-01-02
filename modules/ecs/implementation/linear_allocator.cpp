@@ -1,12 +1,8 @@
 module;
 
-#include <cstddef>
-#include <cstdint>
 #include <cassert>
 
-module ecs;
-
-import :linear_allocator;
+module ecs.linear_allocator;
 
 namespace gg
 {
@@ -15,7 +11,7 @@ namespace memory
 namespace allocator
 {
 
-LinearAllocator::LinearAllocator(const std::size_t memory_size, const void* memory)
+LinearAllocator::LinearAllocator(const Size memory_size, const void* memory)
     : IAllocator(memory_size, memory)
 {}
 
@@ -24,20 +20,20 @@ LinearAllocator::~LinearAllocator()
     this->clear();
 }
 
-void* LinearAllocator::allocate(const std::size_t size, const uint8_t alignment)
+void* LinearAllocator::allocate(const Size size, const U8 alignment)
 {
     assert(size > 0 && "allocate calles with memSize = 0.");
 
     union
     {
         void* as_void_pointer;
-        uintptr_t  as_uintptr;
+        UIntPtr as_uintptr;
     };
 
     as_void_pointer = (void*)this->memory_address;
     as_uintptr += this->memory_used;
 
-    uint8_t adjustment = getAdjustment(as_void_pointer, alignment);
+    U8 adjustment = getAdjustment(as_void_pointer, alignment);
 
     if (this->memory_used + size + adjustment > this->memory_size)
     {

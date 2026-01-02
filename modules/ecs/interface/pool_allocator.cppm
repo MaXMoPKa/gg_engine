@@ -1,11 +1,10 @@
 module;
 
-#include <cstddef>
-#include <cstdint>
+export module ecs.pool_allocator;
 
-export module ecs:pool_allocator;
+import ecs.iallocator;
 
-import :iallocator;
+import types.base_types;
 
 namespace gg
 {
@@ -13,23 +12,23 @@ namespace memory
 {
 namespace allocator
 {
-class PoolAllocator : public IAllocator
+export class PoolAllocator : public IAllocator
 {
 public:
-    PoolAllocator(const std::size_t memory_size,
+    PoolAllocator(const Size memory_size,
                   const void*       memory,
-                  const std::size_t object_size,
-                  const uint8_t     object_alignment);
+                  const Size object_size,
+                  const U8     object_alignment);
     virtual ~PoolAllocator();
 
-    virtual void* allocate(const std::size_t size, const uint8_t alignment) override;
+    virtual void* allocate(const Size size, const U8 alignment) override;
     virtual void  free(void* memory) override;
     virtual void  clear() override;
 
 private:
-    const std::size_t object_size;
-    const uint8_t     object_alignment;
-    void**            free_list;
+    const Size object_size;
+    const U8   object_alignment;
+    void**     free_list;
 };
 } // namespace allocator;
 } // namespace memory;
