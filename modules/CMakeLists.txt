@@ -28,9 +28,9 @@ foreach(module_dir IN LISTS MODULES_DIRS)
     set(interface_dir "${CMAKE_CURRENT_SOURCE_DIR}/${module_dir}/interface")
     set(impl_dir "${CMAKE_CURRENT_SOURCE_DIR}/${module_dir}/implementation")
 
-    file(GLOB MODULE_INTERFACE_FILES "${interface_dir}/*.cppm")
+    file(GLOB_RECURSE MODULE_INTERFACE_FILES "${interface_dir}/*.cppm")
 
-    file(GLOB MODULE_IMPL_FILES "${impl_dir}/*.cpp")
+    file(GLOB_RECURSE MODULE_IMPL_FILES "${impl_dir}/*.cpp")
 
     list(APPEND MODULES_INTERFACE_FILES ${MODULE_INTERFACE_FILES})
     list(APPEND MODULES_IMPL_FILES ${MODULE_IMPL_FILES})
