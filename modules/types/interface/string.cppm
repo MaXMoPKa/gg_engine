@@ -11,4 +11,5 @@ namespace gg
     export using U8String = std::u8string;
     export using U16String = std::u16string;
     export using U32String = std::u32string;
+    export using StringView = std::string_view;
 } // namespace gg;
