@@ -9,9 +9,9 @@ add_subdirectory(modules)
 
 #add_subdirectory(programs/gg_studio)
 
-#set(TESTS OFF CACHE BOOL "" ${REWRITE_FORCE})
+set(TESTS OFF CACHE BOOL "" ${REWRITE_FORCE})
 
-#if(${TESTS})
-#    enable_testing()
-#    add_subdirectory(tests)
-#endif()
+if(${TESTS})
+    enable_testing()
+    add_subdirectory(tests)
+endif()

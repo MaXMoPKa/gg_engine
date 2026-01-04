@@ -4,6 +4,7 @@ module;
 
 #include "log4cplus/logger.h"
 #include "log4cplus/loggingmacros.h"
+#include "log4cplus/loglevel.h"
 
 export module log.logger;
 
@@ -44,17 +45,129 @@ namespace log
         public:
             void setLogLevel(LogLevel log_level) noexcept
             {
-                this->logger.setLogLevel(static_cast<log4cplus::LogLevel>(static_cast<int>(log_level)));
+                log4cplus::LogLevel log4cplus_level;
+                switch (log_level)
+                {
+                    case LogLevel::TRACE:
+                    {
+                        log4cplus_level = log4cplus::TRACE_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::DEBUG:
+                    {
+                        log4cplus_level = log4cplus::DEBUG_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::INFO:
+                    {
+                        log4cplus_level = log4cplus::INFO_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::WARNING:
+                    {
+                        log4cplus_level = log4cplus::WARN_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::ERROR:
+                    {
+                        log4cplus_level = log4cplus::ERROR_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::FATAL:
+                    {
+                        log4cplus_level = log4cplus::FATAL_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::COUNT:
+                        [[fallthrough]];
+                    default:
+                    {
+                        log4cplus_level = log4cplus::NOT_SET_LOG_LEVEL;
+                        break;
+                    }
+                }
+                this->logger.setLogLevel(log4cplus_level);
             }
 
             [[nodiscard]] LogLevel getLogLevel() const noexcept
             {
-                return static_cast<LogLevel>(this->logger.getLogLevel());
+                log4cplus::LogLevel log4cplus_level = this->logger.getLogLevel();
+                LogLevel logger_log_level = LogLevel::COUNT;
+                if (log4cplus_level == log4cplus::TRACE_LOG_LEVEL)
+                {
+                    logger_log_level = LogLevel::TRACE;
+                }
+                else if (log4cplus_level == log4cplus::DEBUG_LOG_LEVEL)
+                {
+                    logger_log_level = LogLevel::DEBUG;
+                }
+                else if (log4cplus_level == log4cplus::INFO_LOG_LEVEL)
+                {
+                    logger_log_level = LogLevel::INFO;
+                }
+                else if (log4cplus_level == log4cplus::WARN_LOG_LEVEL)
+                {
+                    logger_log_level = LogLevel::WARNING;
+                }
+                else if (log4cplus_level == log4cplus::ERROR_LOG_LEVEL)
+                {
+                    logger_log_level = LogLevel::ERROR;
+                }
+                else if (log4cplus_level == log4cplus::FATAL_LOG_LEVEL)
+                {
+                    logger_log_level = LogLevel::FATAL;
+                }
+                else
+                {
+                    logger_log_level = LogLevel::COUNT;
+                }
+                return logger_log_level;
             }
 
             [[nodiscard]] Bool isLogLevelEnabled(LogLevel log_level) const noexcept
             {
-                return this->logger.isEnabledFor(static_cast<log4cplus::LogLevel>(static_cast<int>(log_level)));
+                log4cplus::LogLevel log4cplus_level;
+                switch (log_level)
+                {
+                    case LogLevel::TRACE:
+                    {
+                        log4cplus_level = log4cplus::TRACE_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::DEBUG:
+                    {
+                        log4cplus_level = log4cplus::DEBUG_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::INFO:
+                    {
+                        log4cplus_level = log4cplus::INFO_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::WARNING:
+                    {
+                        log4cplus_level = log4cplus::WARN_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::ERROR:
+                    {
+                        log4cplus_level = log4cplus::ERROR_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::FATAL:
+                    {
+                        log4cplus_level = log4cplus::FATAL_LOG_LEVEL;
+                        break;
+                    }
+                    case LogLevel::COUNT:
+                        [[fallthrough]];
+                    default:
+                    {
+                        log4cplus_level = log4cplus::INFO_LOG_LEVEL;
+                        break;
+                    }
+                }
+                return this->logger.isEnabledFor(log4cplus_level);
             }
 
             template<typename... ARGS>
