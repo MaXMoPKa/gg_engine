@@ -1,6 +1,7 @@
 module;
 
 #include <utility>
+#include <format>
 
 #include "log4cplus/logger.h"
 #include "log4cplus/loggingmacros.h"
@@ -219,7 +220,14 @@ namespace log
                 
                 if constexpr (sizeof...(args) > 0)
                 {
-                    output_message = std::format(message, std::forward<ARGS>(args)...);
+                    /*std::string_view format_str(message.data(), message.size());
+                    auto temp_tuple = std::make_tuple(std::forward<ARGS>(args)...);
+                    output_message = std::apply([&format_str](auto&&... temp_args)
+                    {
+                        return std::vformat(format_str, std::make_format_args(temp_args...));
+                    }, temp_tuple);*/
+
+                    output_message = std::vformat(message, std::make_format_args(args...));
                 }
 
                 switch (level)
