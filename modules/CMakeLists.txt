@@ -19,7 +19,8 @@ add_subdirectory(third_party)
 
 set(MODULES_DIRS types
                  ecs
-                 log)
+                 log
+                 render)
 
 set(MODULES_INTERFACE_FILES)
 set(MODULES_IMPL_FILES)
@@ -45,7 +46,7 @@ target_sources(${PROJECT_NAME} PRIVATE ${MODULES_IMPL_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULES_INTERFACE_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULES_IMPL_FILES})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC log4cplus)
+target_link_libraries(${PROJECT_NAME} PUBLIC log4cplus d3d12 dxgi DirectXTex)
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

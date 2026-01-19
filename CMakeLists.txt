@@ -6,8 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #add_subdirectory(programs/gg_studio)
 add_subdirectory(modules)
-
-#add_subdirectory(programs/gg_studio)
+add_subdirectory(programs/gg_studio)
 
 set(TESTS OFF CACHE BOOL "" ${REWRITE_FORCE})
 

@@ -7,3 +7,5 @@ set(WITH_UNIT_TESTS OFF CACHE BOOL "Enable unit tests.")
 set(LOG4CPLUS_BUILD_LOGGINGSERVER OFF CACHE BOOL "Build the logging serve.")
 set(LOG4CPLUS_BUILD_TESTING OFF CACHE BOOL "Build the test suite.")
 add_subdirectory(log4cplus)
+
+add_subdirectory(DirectXTex)
