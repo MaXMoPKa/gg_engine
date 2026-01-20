@@ -1,26 +1,17 @@
+module;
+
 export module core.window_descriptor;
 
-import core.types;
-import core.vector;
+import types.base_types;
+import types.string;
 
-export namespace gg
+namespace gg
 {
-    struct WindowDescriptor
+    export struct WindowDescriptor
     {
-        public:
-            WindowDescriptor() = default;
-            WindowDescriptor(i16vec2 size, const String& title = "Title")
-                : size{size}
-                , title{title}
-            {}
+        U32 width = 1280u;
+        U32 height = 720u;
+        String title{"Sandbox"};
+    }; // struct WindowDescriptor;
 
-            [[nodiscard]] bool is_valid() const
-            {
-                return size.x > 0 && size.y > 0 && !title.empty();
-            }
-
-        public:
-            i16vec2 size{800, 600};
-            String title{"Title"};
-    };
-}
+} // namespace gg;
