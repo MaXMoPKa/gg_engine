@@ -20,7 +20,7 @@ namespace gg
         public:
             WindowManager() = delete;
 
-            static WindowHandle create(const WindowDescriptor& descriptor);
+            [[nodiscard]] static WindowHandle create(const WindowDescriptor& descriptor);
             static void destroy(WindowHandle handle);
 
             static void setTitle(WindowHandle handle, const String& new_title);
@@ -28,7 +28,7 @@ namespace gg
             static void show(WindowHandle handle);
             static void minimize(WindowHandle handle);
 
-            static Bool shouldClose(WindowHandle handle);
+            [[nodiscard]] static Bool shouldClose(WindowHandle handle);
             static void processEvents(WindowHandle handle);
             static void requestClose(WindowHandle handle);
             static void setKeyCallback(std::function<void(Key, Bool)> callback);

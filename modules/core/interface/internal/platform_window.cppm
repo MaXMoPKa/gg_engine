@@ -47,7 +47,7 @@ namespace gg
                 return instance;
             }
 
-            WindowHandle create(const WindowDescriptor& descriptor);
+            [[nodiscard]] WindowHandle create(const WindowDescriptor& descriptor);
             void destroy(WindowHandle handle);
             
             void setTitle(WindowHandle handle, const String& new_title);
@@ -55,21 +55,21 @@ namespace gg
             void show(WindowHandle handle);
             void minimize(WindowHandle handle);
 
-            Bool shouldClose(WindowHandle handle) const;
+            [[nodiscard]] Bool shouldClose(WindowHandle handle) const;
             void processEvents(WindowHandle handle);
 
         #if defined(_WIN32)
-            HWND getHWND(WindowHandle handle) const;
+            [[nodiscard]] HWND getHWND(WindowHandle handle) const;
         #elif defined(__linux__)
             struct X11Pair
             {
                 Display* display;
                 ::Window window;
             }; // struct X11Pair;
-            X11Pair getX11(WindowHandle handle) const;
+            [[nodiscard]] X11Pair getX11(WindowHandle handle) const;
         #endif
 
-            Bool contains(WindowHandle handle) const
+            [[nodiscard]] Bool contains(WindowHandle handle) const
             {
                 return windows.find(handle.id) != windows.end();
             }

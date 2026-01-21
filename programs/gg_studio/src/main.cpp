@@ -58,7 +58,6 @@ int main()
     {
         if(pressed)
         {
-            std::cout << "Pressed: " << static_cast<U16>(key) << std::endl;
             dispatcher.onKeyPress(key);
         }
     });
