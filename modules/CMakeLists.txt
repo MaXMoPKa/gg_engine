@@ -15,8 +15,17 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+include(FetchContent)
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+)
+FetchContent_MakeAvailable(json)
+
 set(MODULES_DIRS types
-                 core)
+                 core
+                 input)
 
 set(MODULES_INTERFACE_FILES)
 set(MODULES_IMPL_FILES)
@@ -41,6 +50,8 @@ target_sources(${PROJECT_NAME} PRIVATE ${MODULES_IMPL_FILES})
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULES_INTERFACE_FILES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULES_IMPL_FILES})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

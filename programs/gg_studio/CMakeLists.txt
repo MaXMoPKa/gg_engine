@@ -27,16 +27,6 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src FILES ${SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /std:c++23
-                                                   /experimental:module)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23
-                                                   -fmodules)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++23 -fmodules-ts)
-endif()
-
 target_link_libraries(${PROJECT_NAME} PUBLIC gg_engine)
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)

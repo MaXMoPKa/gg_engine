@@ -1,9 +1,13 @@
 module;
 
+#include <functional>
+
 export module core.window_manager;
 
 import core.window_descriptor;
 import core.window_handle;
+
+import input.key;
 
 import types.base_types;
 import types.string;
@@ -25,5 +29,7 @@ namespace gg
 
             static Bool shouldClose(WindowHandle handle);
             static void processEvents(WindowHandle handle);
+            static void requestClose(WindowHandle handle);
+            static void setKeyCallback(std::function<void(Key, bool)> callback);
     }; // class WindowManager;
 } // namespace gg;

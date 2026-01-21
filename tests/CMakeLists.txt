@@ -37,8 +37,8 @@ else()
     set(LIBS )
 endif(WIN32)
 
-set(TYPES log)
-set(log logger)
+set(TYPES core)
+set(core window_manager)
 
 function(create_project_from_sources type test)
     file(GLOB MODULE_SOURCE "${type}/${test}/*.cppm")

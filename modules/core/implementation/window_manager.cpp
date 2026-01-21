@@ -1,5 +1,7 @@
 module;
 
+#include <functional>
+
 module core.window_manager;
 
 import :platform;
@@ -44,5 +46,15 @@ namespace gg
     void WindowManager::processEvents(WindowHandle handle)
     {
         WindowManagerImpl::get().processEvents(handle);
+    }
+
+    void WindowManager::requestClose(WindowHandle handle)
+    {
+        WindowManagerImpl::get().requestClose(handle);
+    }
+
+    void WindowManager::setKeyCallback(std::function<void(Key, bool)> callback)
+    {
+        WindowManagerImpl::get().setKeyCallback(callback);
     }
 } // namespace gg;

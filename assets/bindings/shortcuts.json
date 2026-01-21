@@ -1,0 +1,14 @@
+{
+    "bindings": [
+        {
+            "keys": ["SPC", "q", "q"],
+            "action": "close_window",
+            "description": "Quit"
+        },
+        {
+            "keys": ["SPC", "f", "s"],
+            "action": "save_scene",
+            "description": "Save scene"
+        }
+    ]
+}
