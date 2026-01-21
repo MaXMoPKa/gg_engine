@@ -16,6 +16,7 @@ import core.window_handle;
 
 import input.key;
 
+import types.swizzle_vector;
 import types.base_types;
 import types.unordered_map;
 import types.string;
@@ -50,7 +51,7 @@ namespace gg
             void destroy(WindowHandle handle);
             
             void setTitle(WindowHandle handle, const String& new_title);
-            void setSize(WindowHandle handle, U32 new_width, U32 new_height);
+            void setSize(WindowHandle handle, U32Vec2 new_size);
             void show(WindowHandle handle);
             void minimize(WindowHandle handle);
 
@@ -239,8 +240,8 @@ namespace gg
                                    WS_OVERLAPPEDWINDOW,
                                    CW_USEDEFAULT,
                                    CW_USEDEFAULT,
-                                   static_cast<int>(descriptor.width),
-                                   static_cast<int>(descriptor.height),
+                                   static_cast<int>(descriptor.size.x),
+                                   static_cast<int>(descriptor.size.y),
                                    nullptr,
                                    nullptr,
                                    GetModuleHandle(nullptr),
@@ -284,7 +285,7 @@ namespace gg
         SetWindowTextA(it->second.hwnd, new_title.c_str());
     }
 
-    void WindowManagerImpl::setSize(WindowHandle handle, U32 new_width, U32 new_height)
+    void WindowManagerImpl::setSize(WindowHandle handle, U32Vec2 new_size)
     {
         auto it = windows.find(handle.id);
         if(it == windows.end())
@@ -294,8 +295,8 @@ namespace gg
 
         RECT rect;
         GetClientRect(it->second.hwnd, &rect);
-        int dw = static_cast<int>(new_width - (rect.right - rect.left));
-        int dh = static_cast<int>(new_height - (rect.bottom - rect.top));
+        int dw = static_cast<int>(new_size.x - (rect.right - rect.left));
+        int dh = static_cast<int>(new_size.y - (rect.bottom - rect.top));
 
         RECT win_rect;
         GetWindowRect(it->second.hwnd, &win_rect);

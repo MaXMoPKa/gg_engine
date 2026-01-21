@@ -22,7 +22,7 @@ namespace gg
             return;
         }
 
-        this->current_sequence.push_back(key);
+        this->current_state.current_sequence.push_back(key);
         this->tryDispatch();
     }
 
@@ -32,15 +32,15 @@ namespace gg
     void KeyDispatcher::cancel()
     {
         this->reset();
-        this->status_msg = "Cancelled";
+        this->current_state.status_message = "Cancelled";
     }
 
     void KeyDispatcher::reset()
     {
-        this->current_sequence.clear();
-        this->status_msg.reset();
-        this->suggestions.clear();
-        this->awaiting_input = false;
+        this->current_state.current_sequence.clear();
+        this->current_state.status_message.reset();
+        this->current_state.suggestions.clear();
+        this->current_state.is_awaiting_input = false;
     }
 
     void KeyDispatcher::tryDispatch()
@@ -50,32 +50,32 @@ namespace gg
             return;
         }
 
-        if(const KeyAction* action = this->key_map->findExact(this->current_sequence))
+        if(const KeyAction* action = this->key_map->findExact(this->current_state.current_sequence))
         {
             (*action)();
             this->reset();
             return;
         }
 
-        Vector<Suggestion> suggestions = this->key_map->getSuggestions(this->current_sequence);
+        Vector<Suggestion> suggestions = this->key_map->getSuggestions(this->current_state.current_sequence);
         if(!suggestions.empty())
         {
-            this->suggestions = std::move(suggestions);
-            this->awaiting_input = true;
+            this->current_state.suggestions = std::move(suggestions);
+            this->current_state.is_awaiting_input = true;
 
-            String msg = std::format("Key: {}\n", this->formatSequence(this->current_sequence));
-            for(const auto& suggestion : this->suggestions)
+            String msg = std::format("Key: {}\n", this->formatSequence(this->current_state.current_sequence));
+            for(const auto& suggestion : this->current_state.suggestions)
             {
                 msg += std::format("  {} -> {}\n", this->formatKey(suggestion.next_key), suggestion.description);
             }
-            this->status_msg = std::move(msg);
+            this->current_state.status_message = std::move(msg);
         }
         else
         {
-            this->status_msg = std::format("Invalid key sequence: {}", this->formatSequence(this->current_sequence));
-            this->suggestions.clear();
-            this->awaiting_input = false;
-            this->current_sequence.clear();
+            this->current_state.status_message = std::format("Invalid key sequence: {}", this->formatSequence(this->current_state.current_sequence));
+            this->current_state.suggestions.clear();
+            this->current_state.is_awaiting_input = false;
+            this->current_state.current_sequence.clear();
         }
     }
 
@@ -205,6 +205,6 @@ namespace gg
 
     KeyDispatcher::State KeyDispatcher::getState() const
     {
-        return State{.current_sequence = this->current_sequence, .status_message = this->status_msg, .is_awaiting_input = this->awaiting_input};
+        return this->current_state;
     }
 } // namespace gg;

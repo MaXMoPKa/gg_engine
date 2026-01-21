@@ -23,9 +23,9 @@ namespace gg
         WindowManagerImpl::get().setTitle(handle, title);
     }
 
-    void WindowManager::setSize(WindowHandle handle, U32 new_width, U32 new_height)
+    void WindowManager::setSize(WindowHandle handle, U32Vec2 new_size)
     {
-        WindowManagerImpl::get().setSize(handle, new_width, new_height);
+        WindowManagerImpl::get().setSize(handle, new_size);
     }
 
     void WindowManager::show(WindowHandle handle)

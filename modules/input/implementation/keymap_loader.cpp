@@ -17,7 +17,7 @@ namespace gg
         {
             auto j = nlohmann::json::parse(json_str);
 
-            if(!j.contains("bindings") || !j["bindings"])
+            if(!j.contains("bindings") || !j["bindings"].is_array())
             {
                 return false;
             }
@@ -49,14 +49,22 @@ namespace gg
                     continue;
                 }
 
-                auto it = actions.find(action_name);
-                if(it == actions.end())
-                {
-                    continue;
-                }
-
                 String description = binding_json.value("description", String(""));
-                out_map.bind(sequence, it->second, description);
+                // if action empty -- it is group bind
+                if(action_name.empty())
+                {
+                    out_map.bind(sequence, nullptr, description);
+                }
+                else
+                {
+                    auto it = actions.find(action_name);
+                    if(it == actions.end())
+                    {
+                        continue;
+                    }
+
+                    out_map.bind(sequence, it->second, description);
+                }
             }
             
             return true;

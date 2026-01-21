@@ -28,18 +28,15 @@ namespace gg
             void onKeyRelease(Key key);
 
             void cancel();
-            State getState() const;
+            [[nodiscard]] State getState() const;
 
         private:
             void reset();
             void tryDispatch();
-            String formatSequence(const KeySequence& sequence) const;
-            String formatKey(Key key) const;
+            [[nodiscard]] String formatSequence(const KeySequence& sequence) const;
+            [[nodiscard]] String formatKey(Key key) const;
 
-            KeySequence current_sequence;
             const KeyMap* key_map = nullptr;
-            Optional<String> status_msg;
-            Vector<Suggestion> suggestions;
-            Bool awaiting_input = false;
+            State current_state;
     }; // class KeyDispatcher;
 } // namespace gg;

@@ -39,8 +39,8 @@ namespace gg
     {
         public:
             void bind(const KeySequence& sequence, KeyAction action, const String& description = "");
-            const KeyAction* findExact(const KeySequence& sequence) const;
-            Vector<Suggestion> getSuggestions(const KeySequence& prefix) const;
+            [[nodiscard]] const KeyAction* findExact(const KeySequence& sequence) const;
+            [[nodiscard]] Vector<Suggestion> getSuggestions(const KeySequence& prefix) const;
         private:
             using KeyBindingMap = Map<KeySequence, KeyBinding, KeySequenceLess>;
             KeyBindingMap bindings;

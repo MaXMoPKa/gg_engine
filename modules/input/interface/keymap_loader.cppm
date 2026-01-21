@@ -16,9 +16,9 @@ namespace gg
     {
         public:
             void registerAction(const String& name, KeyAction action);
-            Bool loadFromJson(const String& json_str, KeyMap& out_map);
+            [[nodiscard]] Bool loadFromJson(const String& json_str, KeyMap& out_map);
         private:
-            Key parseKeyString(const String& s);
+            [[nodiscard]] Key parseKeyString(const String& s);
             UnorderedMap<String, KeyAction> actions;
     }; // class KeyMapLoader;
 } // namespace gg;

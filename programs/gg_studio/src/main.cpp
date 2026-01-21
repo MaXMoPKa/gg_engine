@@ -1,4 +1,7 @@
 #include <iostream>
+#include <fstream>
+#include <iterator>
+#include <stdexcept>
 
 import core.window_manager;
 import core.window_handle;
@@ -6,34 +9,48 @@ import core.window_handle;
 import input.key;
 import input.key_dispatcher;
 import input.key_sequence;
+import input.keymap_loader;
 
 import types.base_types;
 import types.string;
+
+gg::String readFile(const gg::String& file_path)
+{
+    std::ifstream file(file_path);
+    if(!file.is_open())
+    {
+        throw std::runtime_error("Cannot open file: " + file_path);
+    }
+
+    return gg::String(std::istreambuf_iterator<gg::Char>(file),
+                      std::istreambuf_iterator<gg::Char>());
+}
 
 int main()
 {
     using namespace gg;
     
-    WindowHandle handle = WindowManager::create({.width = 800, .height = 600, .title = "GG Studio"});
+    WindowHandle handle = WindowManager::create({.size = {800u, 600u}, .title = "GG Studio"});
     if(!handle)
     {
         std::cerr << "Failed to create window!" << std::endl;
         return -1;
     }
 
+    String json_str = readFile("assets/bindings/shortcuts.json");
+    
+    KeyMapLoader loader;
+    loader.registerAction("quit", [&](){
+        WindowManager::requestClose(handle); 
+    });
+    
     KeyMap keymap;
-    keymap.bind({Key::Space, Key::Q}, nullptr, "+Quit/Session");
-    keymap.bind({Key::Space, Key::F}, nullptr, "+File");
+    if(!loader.loadFromJson(json_str, keymap))
+    {
+        std::cerr << "Failed to load shortcuts!" << std::endl;
+        return -1;
+    }
     
-    keymap.bind({Key::Space, Key::Q, Key::Q}, [&](){
-        std::cout << "Close command triggered!" << std::endl;
-        WindowManager::requestClose(handle);
-    }, "Quit application");
-    keymap.bind({Key::Space, Key::Q, Key::R}, [](){}, "Restart");
-
-    keymap.bind({Key::Space, Key::F, Key::S}, [](){}, "Save");
-    
-
     KeyDispatcher dispatcher;
     dispatcher.setKeyMap(keymap);
 
